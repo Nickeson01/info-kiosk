@@ -1,0 +1,30 @@
+name: Mirror Compass JSON
+on:
+  schedule: [ { cron: "*/30 * * * *" } ]
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/fetch_compass_json.yml"
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch JSON
+        run: |
+          mkdir -p data
+          curl -fsSL "https://www.compass-group.se/menuapi/feed/json?costNumber=63031&language=sv" -o data/compass.json
+
+      - name: Commit if changed
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add data/compass.json
+            git commit -m "Update compass.json"
+            git push
+          else
+            echo "No changes."
+          fi
