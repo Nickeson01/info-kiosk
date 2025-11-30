@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kiosk Screen – Hands‑off Rotator</title>
+  <style>
+    /* Reset-ish */
+    html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#0b1220; color:#e7ecf5; }
+    #app { display:flex; height:100%; width:100%; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+    .slide { position:absolute; inset:0; display:none; padding:3vh 3vw; box-sizing:border-box; }
+    .slide.active { display:block; animation: fade 800ms ease-in-out; }
+    @keyframes fade { from { opacity:0 } to { opacity:1 } }
+    .card { background: #121a2a; border:1px solid #1b2a44; border-radius:24px; padding:3vh 3vw; height:100%; box-sizing:border-box; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+    .row { display:flex; gap:2vw; height:100%; }
+    .col { flex:1; min-width:0; display:flex; flex-direction:column; }
+    .muted { color:#a9b6d2; }
+    h1, h2, h3 { margin: 0 0 .5rem 0; line-height:1.15; }
+    h1 { font-size: clamp(28px, 4vw, 54px); }
+    h2 { font-size: clamp(22px, 3vw, 36px); }
+    p { font-size: clamp(16px, 1.6vw, 22px); }
+
+    /* Image wall */
+    .imgfit { width:100%; height:100%; object-fit:cover; border-radius:18px; border:1px solid #223353; }
+
+    /* News list */
+    .news-list { overflow:auto; padding-right:1rem; }
+    .news-item { padding:1rem 0; border-bottom:1px dashed #243452; }
+    .news-item:last-child { border-bottom:0; }
+    .news-title { font-size: clamp(18px, 2vw, 28px); margin:0 0 .25rem; }
+    .news-meta { font-size: .9em; color:#95a7c7; }
+
+    /* Clock / status bar */
+    .status { position:absolute; bottom:1vh; right:1vw; font-size: clamp(12px, 1.2vw, 16px); color:#8aa0c6; }
+    .pill { display:inline-block; background:#0f1a2e; border:1px solid #203356; padding:.35rem .6rem; border-radius:999px; margin-left:.5rem; }
+
+    /* Progress bar */
+    .progress { position:absolute; left:0; bottom:0; height:6px; background:#1e2c47; width:100%; }
+    .progress > div { height:100%; width:0; background:linear-gradient(90deg,#5aa0ff,#7bf); transition:width .2s linear; }
+
+    /* Fullscreen helper button (optional for setup) */
+    .fs-btn { position:absolute; top:1vh; right:1vw; background:#182744; border:1px solid #28406e; color:#dbe7ff; padding:.5rem .8rem; border-radius:10px; cursor:pointer; font-size:14px; opacity:.6; }
+    .fs-btn:hover { opacity:1; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- Slide 1: SharePoint News -->
+  <section class="slide active" data-type="news" data-duration="20">
+    <div class="card row">
+      <div class="col" style="flex:1.6">
+        <h1>Company News</h1>
+        <p class="muted">Latest posts from SharePoint</p>
+        <div id="news" class="news-list"></div>
+      </div>
+      <div class="col" style="flex:1">
+        <img id="news-image" class="imgfit" alt="News image" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 2: Image / Poster -->
+  <section class="slide" data-type="images" data-duration="12">
+    <div class="card row">
+      <div class="col" style="flex:1">
+        <img id="poster" class="imgfit" alt="Poster" />
+      </div>
+      <div class="col" style="flex:1">
+        <h1>Upcoming</h1>
+        <h2 id="poster-title">Weekly highlights</h2>
+        <p id="poster-desc" class="muted">Drop images in a folder; they rotate automatically.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 3: Iframe (optional KPI, dashboard, sheet, etc.) -->
+  <section class="slide" data-type="iframe" data-duration="18">
+    <div class="card" style="height:100%">
+      <h1 style="margin-bottom:1rem">KPI Dashboard</h1>
+      <iframe id="kpi" src="about:blank" style="width:100%; height: calc(100% - 4rem); border:1px solid #223353; border-radius:18px; background:#0b1220;"></iframe>
+    </div>
+  </section>
+
+  <div class="status"><span id="clock"></span><span class="pill" id="status-pill">Loading…</span></div>
+  <div class="progress"><div id="progressbar"></div></div>
+  <button class="fs-btn" onclick="openFullscreen()">Fullscreen</button>
+</div>
+
+<script>
+/**
+ * CONFIG – edit these for your environment (no paid services required)
+ */
+const CONFIG = {
+  rotationSecondsFallback: 15,
+
+  // 1) SharePoint News feed – pick ONE of the two approaches below.
+  sharepoint: {
+    // (A) If your SharePoint exposes RSS for News, paste the RSS URL here (often works if enabled).
+    // Example (you must replace): 'https://YOURTENANT.sharepoint.com/sites/YOURSITE/_layouts/15/listfeed.aspx?List=%7BGUID%7D'
+    rssUrl: '',
+
+    // (B) Microsoft Graph (requires M365 sign-in; no extra cost; works reliably in most tenants).
+    // Steps: register a Public client SPA app in Entra ID (redirect = current URL), grant delegated Sites.Read.All (admin consent), paste IDs.
+    graph: {
+      tenantId: '', // e.g., 'contoso.onmicrosoft.com' or a GUID
+      clientId: '', // your app registration (Application ID)
+      siteId: '',   // Graph site ID for the target SharePoint site
+      // You can find siteId via: https://graph.microsoft.com/v1.0/sites?search=YourSiteName
+      scope: 'Sites.Read.All'
+    }
+  },
+
+  // 2) Poster / image rotation (no auth). Put images in a public or intra‑net reachable folder, or serve from the same directory.
+  posters: [
+    // Replace with your actual image URLs.
+    { src: 'poster1.jpg', title: 'Safety Week', desc: 'Wear PPE. Toolbox talk at 09:15.' },
+    { src: 'poster2.jpg', title: 'Fika Friday', desc: 'Conference Room B, 14:30.' },
+    { src: 'poster3.jpg', title: 'New Product', desc: 'Launch recap & photos.' }
+  ],
+
+  // 3) Optional KPI iframe (publish a Google Sheet chart, Power BI report with org auth, Grafana anon view, etc.)
+  kpiUrl: '' // e.g., a published web view
+};
+
+/**
+ * UTILITIES
+ */
+function openFullscreen(){
+  const el = document.documentElement;
+  if (el.requestFullscreen) el.requestFullscreen();
+}
+
+function fmtDate(d){
+  return d.toLocaleString(undefined, { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+function tickClock(){
+  document.getElementById('clock').textContent = fmtDate(new Date());
+}
+setInterval(tickClock, 1000); tickClock();
+
+/**
+ * SLIDE ROTATION
+ */
+let slideIndex = 0; let slideTimer = null; let progressTimer = null; let seconds = 0; let maxSeconds = 0;
+const slides = Array.from(document.querySelectorAll('.slide'));
+
+function showSlide(i){
+  slides.forEach(s => s.classList.remove('active'));
+  const slide = slides[i];
+  if (!slide) return;
+  slide.classList.add('active');
+  seconds = 0;
+  maxSeconds = Number(slide.dataset.duration) || CONFIG.rotationSecondsFallback;
+  document.getElementById('progressbar').style.width = '0%';
+  updateStatus(slide.dataset.type);
+  if (slide.dataset.type === 'iframe' && CONFIG.kpiUrl){
+    document.getElementById('kpi').src = CONFIG.kpiUrl;
+  }
+}
+
+function updateStatus(type){
+  const m = { news:'SharePoint news', images:'Poster rotation', iframe:'Embedded dashboard' };
+  document.getElementById('status-pill').textContent = m[type] || '…';
+}
+
+function startRotation(){
+  clearInterval(slideTimer); clearInterval(progressTimer);
+  showSlide(slideIndex);
+  slideTimer = setInterval(()=>{
+    slideIndex = (slideIndex + 1) % slides.length; showSlide(slideIndex);
+  }, 1000 * (Number(slides[slideIndex].dataset.duration) || CONFIG.rotationSecondsFallback));
+
+  progressTimer = setInterval(()=>{
+    seconds += .2; const pct = Math.min(100, (seconds / maxSeconds) * 100);
+    document.getElementById('progressbar').style.width = pct + '%';
+    if (seconds >= maxSeconds) { seconds = 0; }
+  }, 200);
+}
+
+/**
+ * NEWS: Either via RSS (simplest, if enabled) or via Graph with MSAL.
+ */
+async function loadNews(){
+  const newsEl = document.getElementById('news');
+  newsEl.innerHTML = '<p class="muted">Loading news…</p>';
+
+  try {
+    if (CONFIG.sharepoint.rssUrl) {
+      const items = await fetchRssItems(CONFIG.sharepoint.rssUrl);
+      renderNews(items);
+    } else if (CONFIG.sharepoint.graph.tenantId && CONFIG.sharepoint.graph.clientId && CONFIG.sharepoint.graph.siteId) {
+      await ensureMsalLoaded();
+      const items = await fetchGraphNews();
+      renderNews(items);
+    } else {
+      newsEl.innerHTML = '<p class="muted">No SharePoint source configured yet.</p>';
+    }
+  } catch (e){
+    newsEl.innerHTML = '<p class="muted">Failed to load news.</p>';
+    console.error(e);
+  }
+}
+
+function renderNews(items){
+  const newsEl = document.getElementById('news');
+  if (!items || !items.length){ newsEl.innerHTML = '<p class="muted">No recent posts.</p>'; return; }
+  const top = items[0];
+  document.getElementById('news-image').src = top.image || '';
+  newsEl.innerHTML = items.slice(0,6).map(item => `
+    <div class="news-item">
+      <h3 class="news-title">${escapeHtml(item.title)}</h3>
+      <div class="news-meta">${new Date(item.date).toLocaleDateString()} · ${item.author || ''}</div>
+      <p class="muted">${escapeHtml(item.summary || '').slice(0,220)}${(item.summary||'').length>220?'…':''}</p>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(s){
+  return (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m]));
+}
+
+async function fetchRssItems(url){
+  // Many tenants block CORS for RSS; if so, use Graph method instead.
+  const res = await fetch(url);
+  const text = await res.text();
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(text, 'text/xml');
+  const items = Array.from(xml.querySelectorAll('item')).map(it => ({
+    title: it.querySelector('title')?.textContent || 'Untitled',
+    date: it.querySelector('pubDate')?.textContent || new Date().toISOString(),
+    summary: it.querySelector('description')?.textContent || '',
+    author: it.querySelector('author')?.textContent || '',
+    link: it.querySelector('link')?.textContent || '',
+    image: (it.querySelector('enclosure')?.getAttribute('url')) || ''
+  }));
+  return items;
+}
+
+// --- Microsoft Graph path (SPA, no backend required) ---
+let msalInstance = null; let graphToken = null;
+function ensureMsalLoaded(){
+  return new Promise((resolve) => {
+    if (window.msal) return resolve();
+    const s = document.createElement('script');
+    s.src = 'https://alcdn.msauth.net/browser/2.38.4/js/msal-browser.min.js';
+    s.onload = resolve; document.head.appendChild(s);
+  });
+}
+
+async function getMsal(){
+  if (!msalInstance){
+    msalInstance = new msal.PublicClientApplication({
+      auth: { clientId: CONFIG.sharepoint.graph.clientId, authority: `https://login.microsoftonline.com/${CONFIG.sharepoint.graph.tenantId}` },
+      cache: { cacheLocation: 'localStorage' }
+    });
+  }
+  // Try SSO / silent first
+  const accounts = msalInstance.getAllAccounts();
+  if (!accounts.length){
+    await msalInstance.loginPopup({ scopes:[`https://graph.microsoft.com/${CONFIG.sharepoint.graph.scope}`] });
+  }
+  const account = msalInstance.getAllAccounts()[0];
+  const res = await msalInstance.acquireTokenSilent({ account, scopes:[`https://graph.microsoft.com/${CONFIG.sharepoint.graph.scope}`] }).catch(() => msalInstance.acquireTokenPopup({ scopes:[`https://graph.microsoft.com/${CONFIG.sharepoint.graph.scope}`] }));
+  graphToken = res.accessToken;
+}
+
+async function fetchGraphNews(){
+  await getMsal();
+  // News are Site Pages with PromotedState == 2
+  const siteId = CONFIG.sharepoint.graph.siteId;
+  const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/Site%20Pages/items?expand=fields&$filter=fields/PromotedState eq 2&$orderby=fields/FirstPublishedDate desc&$top=8`;
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${graphToken}` } });
+  const json = await res.json();
+  const items = (json.value||[]).map(v => ({
+    title: v.fields?.Title,
+    date: v.fields?.FirstPublishedDate || v.fields?.Created,
+    summary: v.fields?.Description || v.fields?.Excerpt || '',
+    author: v.fields?.Author0 || '',
+    link: v.webUrl || '',
+    image: v.fields?.BannerImageUrl || ''
+  }));
+  return items;
+}
+
+/**
+ * POSTER ROTATION
+ */
+let posterIndex = 0;
+function updatePoster(){
+  if (!CONFIG.posters.length) return;
+  const it = CONFIG.posters[posterIndex % CONFIG.posters.length];
+  document.getElementById('poster').src = it.src;
+  document.getElementById('poster-title').textContent = it.title || '';
+  document.getElementById('poster-desc').textContent = it.desc || '';
+  posterIndex++;
+}
+setInterval(updatePoster, 7000);
+
+/**
+ * BOOT
+ */
+(async function init(){
+  try {
+    await loadNews();
+    updatePoster();
+    startRotation();
+  } catch (e){ console.error(e); }
+})();
+</script>
+</body>
+</html>
