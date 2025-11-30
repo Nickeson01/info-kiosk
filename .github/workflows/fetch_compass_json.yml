@@ -1,6 +1,11 @@
 name: Mirror Compass JSON
+
+permissions:
+  contents: write  # <-- allow pushes with GITHUB_TOKEN
+
 on:
-  schedule: [ { cron: "*/30 * * * *" } ]
+  schedule:
+    - cron: "*/30 * * * *"
   workflow_dispatch:
   push:
     paths:
@@ -10,21 +15,29 @@ jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create data folder
+        run: mkdir -p data
 
       - name: Fetch JSON
         run: |
-          mkdir -p data
           curl -fsSL "https://www.compass-group.se/menuapi/feed/json?costNumber=63031&language=sv" -o data/compass.json
 
-      - name: Commit if changed
+      - name: Configure git
         run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit changes if needed
+        run: |
+          if [[ -n "$(git status --porcelain data/compass.json)" ]]; then
             git add data/compass.json
             git commit -m "Update compass.json"
             git push
           else
-            echo "No changes."
+            echo "No changes to commit."
           fi
