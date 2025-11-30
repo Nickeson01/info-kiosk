@@ -46,7 +46,7 @@
 <body>
 <div id="app">
   <!-- Slide 1: SharePoint News -->
-  <section class="slide active" data-type="news" data-duration="30">
+  <section class="slide active" data-type="news" data-duration="20">
     <div class="card row">
       <div class="col" style="flex:1.6">
         <h1>Company News</h1>
@@ -60,7 +60,7 @@
   </section>
 
   <!-- Slide 2: Image / Poster -->
-  <section class="slide" data-type="images" data-duration="30">
+  <section class="slide" data-type="images" data-duration="12">
     <div class="card row">
       <div class="col" style="flex:1">
         <img id="poster" class="imgfit" alt="Poster" />
@@ -308,5 +308,27 @@ setInterval(updatePoster, 7000);
   } catch (e){ console.error(e); }
 })();
 </script>
+  <script>
+    // Compass JSON integration
+    const COMPASS_JSON_LOCAL = "data/compass.json";
+    function todayKey(){ const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; }
+    function extractDateKey(it){const c=[it.pubDate,it.date,it.published,it.startDate,it.validFor,it.day,it.title,it.description].filter(Boolean);
+      for(const x of c){const d=new Date(x);if(!isNaN(d)) return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const m=String(x).match(/(20\d{2})-(\d{2})-(\d{2})/);if(m) return `${m[1]}-${m[2]}-${m[3]}`;} return null;}
+    async function loadCompassToday(){const r=await fetch(COMPASS_JSON_LOCAL,{cache:'no-store'});const data=await r.json();const items=Array.isArray(data)?data:(data.items||[]);
+      const t=todayKey();let it=items.find(i=>extractDateKey(i)===t);
+      if(!it){const wd=new Intl.DateTimeFormat('sv-SE',{weekday:'long'}).format(new Date()).toLowerCase();it=items.find(i=>JSON.stringify(i).toLowerCase().includes(wd));}
+      if(!it) it=items[0]||null;renderTodayMenu_fromJson(it);} 
+    function renderTodayMenu_fromJson(it){const cd=id=>document.getElementById(id);
+      if(!it){cd('menu-date').textContent='Ingen meny';cd('menu-content').innerHTML='';cd('menu-image').src='';return;}
+      cd('menu-date').textContent=new Intl.DateTimeFormat('sv-SE',{weekday:'long',day:'numeric',month:'long'}).format(new Date());
+      const title=it.title||it.name||'Dagens lunch';const desc=(it.description||it.summary||'').replace(/<[^>]+>/g,'');
+      cd('menu-content').innerHTML=`<div class="news-item"><h3 class="news-title">${title}</h3><p class="muted">${desc}</p></div>`;
+      cd('menu-image').src=it.image||'';}
+    function scheduleMenuAuto(){setInterval(loadCompassToday,30*60*1000);
+      const n=new Date();const next=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,0,0,5);
+      setTimeout(()=>location.reload(),next-n);} 
+    loadCompassToday(); scheduleMenuAuto();
+  </script>
 </body>
 </html>
