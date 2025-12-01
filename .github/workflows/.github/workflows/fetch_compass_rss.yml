@@ -1,0 +1,37 @@
+name: Mirror Compass RSS (weekly)
+permissions:
+  contents: write
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"   # every 30 min
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/fetch_compass_rss.yml"
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Create data folder
+        run: mkdir -p data
+      - name: Fetch RSS
+        run: |
+          curl -fsSL "https://www.compass-group.se/menuapi/feed/rss/current-week?costNumber=63031&language=sv" \
+            -o data/compass_week.xml
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Commit if changed
+        run: |
+          if [[ -n "$(git status --porcelain data/compass_week.xml)" ]]; then
+            git add data/compass_week.xml
+            git commit -m "Update compass_week.xml"
+            git push
+          else
+            echo "No changes."
+          fi
