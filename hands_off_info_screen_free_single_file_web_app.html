@@ -6,7 +6,16 @@
   <title>Kiosk Screen – Hands‑off Rotator</title>
   <style>
     /* Reset-ish */
-    html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#0b1220; color:#e7ecf5; }
+    :root {
+      --offWhite: rgba(255, 255, 236,1);
+      /*
+      --blue: rgba(X, X, X,1);
+      --offWhite: rgba(X, X, X,1);
+      --offWhite: rgba(X, X, X,1);
+      */
+    }
+    
+    html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:var(--offWhite); color: #222; }
     #app { display:flex; height:100%; width:100%; align-items:center; justify-content:center; position:relative; overflow:hidden; }
     .slide { position:absolute; inset:0; display:none; padding:3vh 3vw; box-sizing:border-box; }
     .slide.active { display:block; animation: fade 800ms ease-in-out; }
@@ -80,6 +89,24 @@
       <iframe id="kpi" src="about:blank" style="width:100%; height: calc(100% - 4rem); border:1px solid #223353; border-radius:18px; background:#0b1220;"></iframe>
     </div>
   </section>
+  
+  <!-- Slide 4: Food of the Day -->
+  <section class="slide" data-type="menu" data-duration="15">
+    <div class="card row">
+      <div class="col" style="flex: 1.6;">
+        <h1>Dagens lunch</h1>
+        <p class="muted" id="menu-date">–</p>
+  
+        <div id="menu-content" class="news-list">
+          <!-- Filled dynamically with Compass JSON -->
+        </div>
+      </div>
+  
+      <div class="col" style="flex: 1;">
+        <img id="menu-image" class="imgfit" alt="Menu image" />
+      </div>
+    </div>
+  </section>
 
   <div class="status"><span id="clock"></span><span class="pill" id="status-pill">Loading…</span></div>
   <div class="progress"><div id="progressbar"></div></div>
@@ -142,41 +169,51 @@ setInterval(tickClock, 1000); tickClock();
 /**
  * SLIDE ROTATION
  */
-let slideIndex = 0; let slideTimer = null; let progressTimer = null; let seconds = 0; let maxSeconds = 0;
+let slideIndex = 0;
 const slides = Array.from(document.querySelectorAll('.slide'));
+let nextTimer = null;
+let progressTimer = null;
 
 function showSlide(i){
   slides.forEach(s => s.classList.remove('active'));
   const slide = slides[i];
   if (!slide) return;
   slide.classList.add('active');
-  seconds = 0;
-  maxSeconds = Number(slide.dataset.duration) || CONFIG.rotationSecondsFallback;
-  document.getElementById('progressbar').style.width = '0%';
+
+  const seconds = Number(slide.dataset.duration) || CONFIG.rotationSecondsFallback;
+
   updateStatus(slide.dataset.type);
-  if (slide.dataset.type === 'iframe' && CONFIG.kpiUrl){
+  if (slide.dataset.type === 'iframe' && CONFIG.kpiUrl) {
     document.getElementById('kpi').src = CONFIG.kpiUrl;
   }
-}
 
-function updateStatus(type){
-  const m = { news:'SharePoint news', images:'Poster rotation', iframe:'Embedded dashboard' };
-  document.getElementById('status-pill').textContent = m[type] || '…';
+  // progress bar animate per slide
+  const bar = document.getElementById('progressbar');
+  bar.style.transition = 'none';
+  bar.style.width = '0%';
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      bar.style.transition = `width ${seconds}s linear`;
+      bar.style.width = '100%';
+    });
+  });
+
+  clearTimeout(nextTimer);
+  clearInterval(progressTimer);
+  progressTimer = null;
+
+  nextTimer = setTimeout(() => {
+    slideIndex = (slideIndex + 1) % slides.length;
+    showSlide(slideIndex);
+  }, seconds * 1000);
 }
 
 function startRotation(){
-  clearInterval(slideTimer); clearInterval(progressTimer);
+  clearTimeout(nextTimer);
+  clearInterval(progressTimer);
   showSlide(slideIndex);
-  slideTimer = setInterval(()=>{
-    slideIndex = (slideIndex + 1) % slides.length; showSlide(slideIndex);
-  }, 1000 * (Number(slides[slideIndex].dataset.duration) || CONFIG.rotationSecondsFallback));
-
-  progressTimer = setInterval(()=>{
-    seconds += .2; const pct = Math.min(100, (seconds / maxSeconds) * 100);
-    document.getElementById('progressbar').style.width = pct + '%';
-    if (seconds >= maxSeconds) { seconds = 0; }
-  }, 200);
 }
+
 
 /**
  * NEWS: Either via RSS (simplest, if enabled) or via Graph with MSAL.
@@ -295,7 +332,12 @@ function updatePoster(){
   document.getElementById('poster-desc').textContent = it.desc || '';
   posterIndex++;
 }
-setInterval(updatePoster, 7000);
+
+function maybeRotatePoster(){
+  const active = document.querySelector('.slide.active');
+  if (active && active.dataset.type === 'images') updatePoster();
+}
+setInterval(maybeRotatePoster, 7000);
 
 /**
  * BOOT
@@ -312,23 +354,28 @@ setInterval(updatePoster, 7000);
     // Compass JSON integration
     const COMPASS_JSON_LOCAL = "data/compass.json";
     function todayKey(){ const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; }
+    
     function extractDateKey(it){const c=[it.pubDate,it.date,it.published,it.startDate,it.validFor,it.day,it.title,it.description].filter(Boolean);
       for(const x of c){const d=new Date(x);if(!isNaN(d)) return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         const m=String(x).match(/(20\d{2})-(\d{2})-(\d{2})/);if(m) return `${m[1]}-${m[2]}-${m[3]}`;} return null;}
+    
     async function loadCompassToday(){const r=await fetch(COMPASS_JSON_LOCAL,{cache:'no-store'});const data=await r.json();const items=Array.isArray(data)?data:(data.items||[]);
       const t=todayKey();let it=items.find(i=>extractDateKey(i)===t);
       if(!it){const wd=new Intl.DateTimeFormat('sv-SE',{weekday:'long'}).format(new Date()).toLowerCase();it=items.find(i=>JSON.stringify(i).toLowerCase().includes(wd));}
       if(!it) it=items[0]||null;renderTodayMenu_fromJson(it);} 
+    
     function renderTodayMenu_fromJson(it){const cd=id=>document.getElementById(id);
       if(!it){cd('menu-date').textContent='Ingen meny';cd('menu-content').innerHTML='';cd('menu-image').src='';return;}
       cd('menu-date').textContent=new Intl.DateTimeFormat('sv-SE',{weekday:'long',day:'numeric',month:'long'}).format(new Date());
       const title=it.title||it.name||'Dagens lunch';const desc=(it.description||it.summary||'').replace(/<[^>]+>/g,'');
       cd('menu-content').innerHTML=`<div class="news-item"><h3 class="news-title">${title}</h3><p class="muted">${desc}</p></div>`;
       cd('menu-image').src=it.image||'';}
+    
     function scheduleMenuAuto(){setInterval(loadCompassToday,30*60*1000);
       const n=new Date();const next=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,0,0,5);
       setTimeout(()=>location.reload(),next-n);} 
     loadCompassToday(); scheduleMenuAuto();
+    
   </script>
 </body>
 </html>
