@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Kiosk Screen – Hands-off Rotator</title>
   <style>
-    /* ===== Theme / palette ===== */
     :root{
       --offWhite: rgba(255,255,236,1);
       --cardBg: #121a2a;
@@ -20,69 +19,36 @@
       --progressFill1: #5aa0ff;
       --progressFill2: #77bbff;
     }
-
-    /* ===== Base ===== */
-    html, body {
-      height: 100%;
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: var(--offWhite);
-      color: #222;  /* base text (outside .card) */
-    }
+    html, body { height:100%; margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--offWhite); color:#222; }
     #app { display:flex; height:100%; width:100%; align-items:center; justify-content:center; position:relative; overflow:hidden; }
-
-    /* Slides */
     .slide { position:absolute; inset:0; display:none; padding:3vh 3vw; box-sizing:border-box; }
     .slide.active { display:block; animation: fade 800ms ease-in-out; }
-    @keyframes fade { from { opacity:0 } to { opacity:1 } }
-
-    /* Card (dark surface) */
-    .card {
-      background: var(--cardBg);
-      border: 1px solid var(--cardBorder);
-      border-radius: 24px;
-      padding: 3vh 3vw;
-      height: 100%;
-      box-sizing: border-box;
-      box-shadow: 0 10px 30px rgba(0,0,0,.3);
-      color: var(--textOnCard);
-    }
-
+    @keyframes fade { from{opacity:0} to{opacity:1} }
+    .card { background:var(--cardBg); border:1px solid var(--cardBorder); border-radius:24px; padding:3vh 3vw; height:100%; box-sizing:border-box; box-shadow:0 10px 30px rgba(0,0,0,.3); color:var(--textOnCard); }
     .row { display:flex; gap:2vw; height:100%; }
     .col { flex:1; min-width:0; display:flex; flex-direction:column; }
-
-    .muted { color: var(--mutedOnCard); }
-    h1, h2, h3 { margin: 0 0 .5rem 0; line-height:1.15; color: var(--textOnCard); }
-    h1 { font-size: clamp(28px, 4vw, 54px); }
-    h2 { font-size: clamp(22px, 3vw, 36px); }
-    p  { font-size: clamp(16px, 1.6vw, 22px); }
-
-    /* Image fit */
+    .muted { color:var(--mutedOnCard); }
+    h1,h2,h3 { margin:0 0 .5rem 0; line-height:1.15; color:var(--textOnCard); }
+    h1 { font-size:clamp(28px,4vw,54px); }
+    h2 { font-size:clamp(22px,3vw,36px); }
+    p  { font-size:clamp(16px,1.6vw,22px); }
     .imgfit { width:100%; height:100%; object-fit:cover; border-radius:18px; border:1px solid var(--imgBorder); }
-
-    /* News list */
     .news-list { overflow:auto; padding-right:1rem; }
     .news-item { padding:1rem 0; border-bottom:1px dashed var(--ruleOnCard); }
     .news-item:last-child { border-bottom:0; }
-    .news-title { font-size: clamp(18px, 2vw, 28px); margin:0 0 .25rem; }
-    .news-meta { font-size: .9em; color: #95a7c7; }
-
-    /* Clock / status pill */
-    .status { position:absolute; bottom:1vh; right:1vw; font-size: clamp(12px, 1.2vw, 16px); color:#8aa0c6; }
+    .news-title { font-size:clamp(18px,2vw,28px); margin:0 0 .25rem; }
+    .news-meta { font-size:.9em; color:#95a7c7; }
+    .status { position:absolute; bottom:1vh; right:1vw; font-size:clamp(12px,1.2vw,16px); color:#8aa0c6; }
     .pill { display:inline-block; background:var(--statusBg); border:1px solid var(--statusBorder); padding:.35rem .6rem; border-radius:999px; margin-left:.5rem; }
-
-    /* Progress bar */
     .progress { position:absolute; left:0; bottom:0; height:6px; background:var(--progressBg); width:100%; }
     .progress > div { height:100%; width:0; background:linear-gradient(90deg,var(--progressFill1),var(--progressFill2)); }
-
-    /* Fullscreen helper */
     .fs-btn { position:absolute; top:1vh; right:1vw; background:#182744; border:1px solid #28406e; color:#dbe7ff; padding:.5rem .8rem; border-radius:10px; cursor:pointer; font-size:14px; opacity:.6; }
     .fs-btn:hover { opacity:1; }
   </style>
 </head>
 <body>
 <div id="app">
-  <!-- Slide 1: SharePoint News (leave as placeholder if not configured) -->
+  <!-- Slide 1: SharePoint News -->
   <section class="slide active" data-type="news" data-duration="20">
     <div class="card row">
       <div class="col" style="flex:1.6">
@@ -96,7 +62,7 @@
     </div>
   </section>
 
-  <!-- Slide 2: Posters (uses placeholder images; replace with your own URLs/files) -->
+  <!-- Slide 2: Posters -->
   <section class="slide" data-type="images" data-duration="12">
     <div class="card row">
       <div class="col" style="flex:1">
@@ -118,15 +84,15 @@
     </div>
   </section>
 
-  <!-- Slide 4: Food of the Day (Compass JSON) -->
+  <!-- Slide 4: Food of the Day (Compass via weekly RSS mirror) -->
   <section class="slide" data-type="menu" data-duration="15">
     <div class="card row">
-      <div class="col" style="flex: 1.6;">
+      <div class="col" style="flex:1.6;">
         <h1>Dagens lunch</h1>
         <p class="muted" id="menu-date">–</p>
         <div id="menu-content" class="news-list"></div>
       </div>
-      <div class="col" style="flex: 1;">
+      <div class="col" style="flex:1;">
         <img id="menu-image" class="imgfit" alt="Menu image" />
       </div>
     </div>
@@ -141,269 +107,150 @@
 /* ================= CONFIG ================= */
 const CONFIG = {
   rotationSecondsFallback: 15,
-
-  // SharePoint (set either rssUrl OR Graph credentials; leave empty to show placeholder)
-  sharepoint: {
-    rssUrl: '', // e.g. 'https://TENANT.sharepoint.com/sites/SITE/_layouts/15/listfeed.aspx?List=%7BGUID%7D'
-    graph: { tenantId:'', clientId:'', siteId:'', scope:'Sites.Read.All' }
-  },
-
-  // Poster images (replace with your real files/paths or external URLs)
+  sharepoint: { rssUrl:'', graph:{ tenantId:'', clientId:'', siteId:'', scope:'Sites.Read.All' } },
   posters: [
-    { src: 'https://picsum.photos/1200/800?1', title: 'Safety Week', desc: 'Wear PPE. Toolbox talk 09:15.' },
-    { src: 'https://picsum.photos/1200/800?2', title: 'Fika Friday', desc: 'Conference Room B, 14:30.' },
-    { src: 'https://picsum.photos/1200/800?3', title: 'New Product', desc: 'Launch recap & photos.' }
+    { src:'https://picsum.photos/1200/800?1', title:'Safety Week', desc:'Wear PPE. Toolbox talk 09:15.' },
+    { src:'https://picsum.photos/1200/800?2', title:'Fika Friday',  desc:'Conference Room B, 14:30.' },
+    { src:'https://picsum.photos/1200/800?3', title:'New Product',  desc:'Launch recap & photos.' }
   ],
-
-  // KPI iframe (optional)
-  kpiUrl: '' // e.g. published Grafana/Power BI/Sheet URL; leave blank to keep about:blank
+  kpiUrl: ''
 };
 
 /* ================= UTILITIES ================= */
 function openFullscreen(){ const el=document.documentElement; if (el.requestFullscreen) el.requestFullscreen(); }
 function fmtDate(d){ return d.toLocaleString(undefined,{weekday:'short',year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}); }
 function tickClock(){ document.getElementById('clock').textContent = fmtDate(new Date()); }
-setInterval(tickClock, 1000); tickClock();
-
+setInterval(tickClock,1000); tickClock();
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
-/* ================= ROTATION (per-slide timing) ================= */
+/* ================= ROTATION ================= */
 let slideIndex = 0;
 const slides = Array.from(document.querySelectorAll('.slide'));
 let nextTimer = null;
 
 function updateStatus(type){
-  const m = {
-    news: 'SharePoint news',
-    images: 'Poster rotation',
-    iframe: 'Embedded dashboard',
-    menu: 'Dagens lunch'
-  };
+  const m={ news:'SharePoint news', images:'Poster rotation', iframe:'Embedded dashboard', menu:'Dagens lunch' };
   document.getElementById('status-pill').textContent = m[type] || '…';
 }
 
 function showSlide(i){
-  slides.forEach(s => s.classList.remove('active'));
-  const slide = slides[i]; if (!slide) return;
+  slides.forEach(s=>s.classList.remove('active'));
+  const slide = slides[i]; if(!slide) return;
   slide.classList.add('active');
 
   const seconds = Number(slide.dataset.duration) || CONFIG.rotationSecondsFallback;
   updateStatus(slide.dataset.type);
 
-  // slide-specific loads
-  if (slide.dataset.type === 'iframe' && CONFIG.kpiUrl) document.getElementById('kpi').src = CONFIG.kpiUrl;
-  if (slide.dataset.type === 'images') updatePoster();
-  if (slide.dataset.type === 'menu') {
-  loadCompassTodayFromRss(); // <-- call RSS loader here
-}
+  if (slide.dataset.type==='iframe' && CONFIG.kpiUrl) document.getElementById('kpi').src = CONFIG.kpiUrl;
+  if (slide.dataset.type==='images') updatePoster();
+  if (slide.dataset.type==='menu') loadCompassTodayFromRss();
 
-  // progress bar animation
   const bar = document.getElementById('progressbar');
-  bar.style.transition = 'none';
-  bar.style.width = '0%';
-  requestAnimationFrame(()=>{ requestAnimationFrame(()=>{
-    bar.style.transition = `width ${seconds}s linear`;
-    bar.style.width = '100%';
-  });});
+  bar.style.transition='none'; bar.style.width='0%';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    bar.style.transition=`width ${seconds}s linear`; bar.style.width='100%';
+  }));
 
   clearTimeout(nextTimer);
-  nextTimer = setTimeout(()=>{
-    slideIndex = (slideIndex + 1) % slides.length;
-    showSlide(slideIndex);
-  }, seconds * 1000);
+  nextTimer = setTimeout(()=>{ slideIndex=(slideIndex+1)%slides.length; showSlide(slideIndex); }, seconds*1000);
 }
-
 function startRotation(){ clearTimeout(nextTimer); showSlide(slideIndex); }
 
-/* ================= NEWS ================= */
+/* ================= NEWS (placeholder until configured) ================= */
 async function loadNews(){
-  const newsEl = document.getElementById('news');
-  newsEl.innerHTML = '<p class="muted">Loading news…</p>';
+  const newsEl=document.getElementById('news');
+  newsEl.innerHTML='<p class="muted">Loading news…</p>';
   try{
     if (CONFIG.sharepoint.rssUrl){
       const items = await fetchRssItems(CONFIG.sharepoint.rssUrl);
       renderNews(items);
-    } else if (CONFIG.sharepoint.graph.tenantId && CONFIG.sharepoint.graph.clientId && CONFIG.sharepoint.graph.siteId){
-      await ensureMsalLoaded();
-      const items = await fetchGraphNews();
-      renderNews(items);
-    } else {
-      newsEl.innerHTML = '<p class="muted">No SharePoint source configured yet.</p>';
+    }else if(CONFIG.sharepoint.graph.tenantId && CONFIG.sharepoint.graph.clientId && CONFIG.sharepoint.graph.siteId){
+      await ensureMsalLoaded(); const items=await fetchGraphNews(); renderNews(items);
+    }else{
+      newsEl.innerHTML='<p class="muted">No SharePoint source configured yet.</p>';
     }
-  }catch(e){
-    console.error(e);
-    newsEl.innerHTML = '<p class="muted">Failed to load news.</p>';
-  }
+  }catch(e){ console.error(e); newsEl.innerHTML='<p class="muted">Failed to load news.</p>'; }
 }
-
 function renderNews(items){
-  const newsEl = document.getElementById('news');
-  if (!items || !items.length){ newsEl.innerHTML = '<p class="muted">No recent posts.</p>'; return; }
-  const top = items[0];
-  document.getElementById('news-image').src = top.image || '';
-  newsEl.innerHTML = items.slice(0,6).map(item=>`
+  const el=document.getElementById('news');
+  if(!items||!items.length){ el.innerHTML='<p class="muted">No recent posts.</p>'; return; }
+  const top=items[0]; document.getElementById('news-image').src=top.image||'';
+  el.innerHTML = items.slice(0,6).map(it=>`
     <div class="news-item">
-      <h3 class="news-title">${escapeHtml(item.title)}</h3>
-      <div class="news-meta">${new Date(item.date).toLocaleDateString()} · ${escapeHtml(item.author||'')}</div>
-      <p class="muted">${escapeHtml(item.summary||'').slice(0,220)}${(item.summary||'').length>220?'…':''}</p>
-    </div>
-  `).join('');
+      <h3 class="news-title">${escapeHtml(it.title)}</h3>
+      <div class="news-meta">${new Date(it.date).toLocaleDateString()} · ${escapeHtml(it.author||'')}</div>
+      <p class="muted">${escapeHtml(it.summary||'').slice(0,220)}${(it.summary||'').length>220?'…':''}</p>
+    </div>`).join('');
 }
-
-async function fetchRssItems(url){
-  const res = await fetch(url); const text = await res.text();
-  const xml = new DOMParser().parseFromString(text,'text/xml');
-  return Array.from(xml.querySelectorAll('item')).map(it=>({
-    title: it.querySelector('title')?.textContent || 'Untitled',
-    date: it.querySelector('pubDate')?.textContent || new Date().toISOString(),
-    summary: it.querySelector('description')?.textContent || '',
-    author: it.querySelector('author')?.textContent || '',
-    link: it.querySelector('link')?.textContent || '',
-    image: it.querySelector('enclosure')?.getAttribute('url') || ''
-  }));
+async function fetchRssItems(url){ const res=await fetch(url); const text=await res.text(); const xml=new DOMParser().parseFromString(text,'text/xml');
+  return Array.from(xml.querySelectorAll('item')).map(it=>({ title:it.querySelector('title')?.textContent||'Untitled', date:it.querySelector('pubDate')?.textContent||new Date().toISOString(), summary:it.querySelector('description')?.textContent||'', author:it.querySelector('author')?.textContent||'', link:it.querySelector('link')?.textContent||'', image:it.querySelector('enclosure')?.getAttribute('url')||'' }));
 }
-
-/* ---- Microsoft Graph path (optional) ---- */
-let msalInstance = null; let graphToken = null;
-function ensureMsalLoaded(){
-  return new Promise(res=>{
-    if (window.msal) return res();
-    const s=document.createElement('script'); s.src='https://alcdn.msauth.net/browser/2.38.4/js/msal-browser.min.js';
-    s.onload=res; document.head.appendChild(s);
-  });
+/* Graph helpers (unused unless you configure) */
+let msalInstance=null, graphToken=null;
+function ensureMsalLoaded(){ return new Promise(res=>{ if(window.msal) return res(); const s=document.createElement('script'); s.src='https://alcdn.msauth.net/browser/2.38.4/js/msal-browser.min.js'; s.onload=res; document.head.appendChild(s); }); }
+async function getMsal(){ if(!msalInstance){ msalInstance=new msal.PublicClientApplication({auth:{clientId:CONFIG.sharepoint.graph.clientId,authority:`https://login.microsoftonline.com/${CONFIG.sharepoint.graph.tenantId}`},cache:{cacheLocation:'localStorage'}}); }
+  const accts=msalInstance.getAllAccounts(); if(!accts.length) await msalInstance.loginPopup({scopes:[`https://graph.microsoft.com/${CONFIG.sharepoint.graph.scope}`]});
+  const account=msalInstance.getAllAccounts()[0];
+  const res=await msalInstance.acquireTokenSilent({account,scopes:[`https://graph.microsoft.com/${CONFIG.sharepoint.graph.scope}`]}).catch(()=>msalInstance.acquireTokenPopup({scopes:[`https://graph.microsoft.com/${CONFIG.sharepoint.graph.scope}`]}));
+  graphToken=res.accessToken;
 }
-async function getMsal(){
-  if (!msalInstance){
-    msalInstance = new msal.PublicClientApplication({
-      auth:{ clientId:CONFIG.sharepoint.graph.clientId, authority:`https://login.microsoftonline.com/${CONFIG.sharepoint.graph.tenantId}` },
-      cache:{ cacheLocation:'localStorage' }
-    });
-  }
-  const accts = msalInstance.getAllAccounts();
-  if (!accts.length) await msalInstance.loginPopup({ scopes:[`https://graph.microsoft.com/${CONFIG.sharepoint.graph.scope}`] });
-  const account = msalInstance.getAllAccounts()[0];
-  const res = await msalInstance.acquireTokenSilent({ account, scopes:[`https://graph.microsoft.com/${CONFIG.sharepoint.graph.scope}`] })
-             .catch(()=> msalInstance.acquireTokenPopup({ scopes:[`https://graph.microsoft.com/${CONFIG.sharepoint.graph.scope}`] }));
-  graphToken = res.accessToken;
-}
-async function fetchGraphNews(){
-  await getMsal();
-  const siteId = CONFIG.sharepoint.graph.siteId;
-  const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/Site%20Pages/items?expand=fields&$filter=fields/PromotedState eq 2&$orderby=fields/FirstPublishedDate desc&$top=8`;
-  const res = await fetch(url, { headers:{ Authorization:`Bearer ${graphToken}` } });
-  const json = await res.json();
-  return (json.value||[]).map(v=>({
-    title: v.fields?.Title,
-    date: v.fields?.FirstPublishedDate || v.fields?.Created,
-    summary: v.fields?.Description || v.fields?.Excerpt || '',
-    author: v.fields?.Author0 || '',
-    link: v.webUrl || '',
-    image: v.fields?.BannerImageUrl || ''
-  }));
+async function fetchGraphNews(){ await getMsal(); const siteId=CONFIG.sharepoint.graph.siteId;
+  const url=`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/Site%20Pages/items?expand=fields&$filter=fields/PromotedState eq 2&$orderby=fields/FirstPublishedDate desc&$top=8`;
+  const res=await fetch(url,{headers:{Authorization:`Bearer ${graphToken}`}}); const json=await res.json();
+  return (json.value||[]).map(v=>({title:v.fields?.Title,date:v.fields?.FirstPublishedDate||v.fields?.Created,summary:v.fields?.Description||v.fields?.Excerpt||'',author:v.fields?.Author0||'',link:v.webUrl||'',image:v.fields?.BannerImageUrl||''}));
 }
 
 /* ================= POSTERS ================= */
-let posterIndex = 0;
-function updatePoster(){
-  if (!CONFIG.posters.length) return;
-  const it = CONFIG.posters[posterIndex % CONFIG.posters.length];
-  document.getElementById('poster').src = it.src;
-  document.getElementById('poster-title').textContent = it.title || '';
-  document.getElementById('poster-desc').textContent = it.desc || '';
-  posterIndex++;
-}
+let posterIndex=0;
+function updatePoster(){ if(!CONFIG.posters.length) return; const it=CONFIG.posters[posterIndex%CONFIG.posters.length];
+  document.getElementById('poster').src=it.src; document.getElementById('poster-title').textContent=it.title||''; document.getElementById('poster-desc').textContent=it.desc||''; posterIndex++; }
+function maybeRotatePoster(){ const active=document.querySelector('.slide.active'); if(active && active.dataset.type==='images') updatePoster(); }
+setInterval(maybeRotatePoster,7000);
 
-/* Only rotate posters while poster slide is visible */
-function maybeRotatePoster(){
-  const active = document.querySelector('.slide.active');
-  if (active && active.dataset.type === 'images') updatePoster();
-}
-setInterval(maybeRotatePoster, 7000);
-
-<script>
-/* ===== COMPASS MENU via weekly RSS mirror ===== */
+/* ================= COMPASS MENU via weekly RSS mirror ================= */
 const COMPASS_RSS_LOCAL = "data/compass_week.xml";
-
 function ymd(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-
-function sameDay(a,b){ return ymd(a) === ymd(b); }
-
-function parseRssItems(xmlText){
-  const xml = new DOMParser().parseFromString(xmlText, "text/xml");
-  const items = Array.from(xml.querySelectorAll("item")).map(it => ({
-    title: it.querySelector("title")?.textContent?.trim() || "",
-    description: it.querySelector("description")?.textContent || "",
-    pubDate: it.querySelector("pubDate")?.textContent || "",
-    link: it.querySelector("link")?.textContent || ""
-  }));
-  return items;
-}
-
-function pickTodayFromRss(items){
-  // 1) Try pubDate match
-  const today = new Date();
-  const byDate = items.find(it => {
-    const d = new Date(it.pubDate);
-    return !isNaN(d) && sameDay(d, today);
-  });
-  if (byDate) return byDate;
-
-  // 2) Fallback: Swedish weekday name in title/description
-  const wd = new Intl.DateTimeFormat("sv-SE",{weekday:"long"}).format(today).toLowerCase();
-  return items.find(it =>
-    (it.title || "").toLowerCase().includes(wd) ||
-    (it.description || "").toLowerCase().includes(wd)
-  ) || items[0] || null;
-}
-
+function sameDay(a,b){ return ymd(a)===ymd(b); }
+function parseRssItems(xmlText){ const xml=new DOMParser().parseFromString(xmlText,"text/xml");
+  return Array.from(xml.querySelectorAll("item")).map(it=>({ title:it.querySelector("title")?.textContent?.trim()||"", description:it.querySelector("description")?.textContent||"", pubDate:it.querySelector("pubDate")?.textContent||"", link:it.querySelector("link")?.textContent||"" })); }
+function pickTodayFromRss(items){ const today=new Date();
+  const byDate=items.find(it=>{ const d=new Date(it.pubDate); return !isNaN(d) && sameDay(d,today); }); if(byDate) return byDate;
+  const wd=new Intl.DateTimeFormat("sv-SE",{weekday:"long"}).format(today).toLowerCase();
+  return items.find(it=>(it.title||"").toLowerCase().includes(wd) || (it.description||"").toLowerCase().includes(wd)) || items[0] || null; }
 function stripHtml(s){ return (s||"").replace(/<[^>]+>/g,"").replace(/&nbsp;/g," ").trim(); }
-
 async function loadCompassTodayFromRss(){
   try{
-    const r = await fetch(COMPASS_RSS_LOCAL, { cache: "no-store" });
-    if (!r.ok) throw new Error("compass_week.xml not found");
-    const xml = await r.text();
-    const items = parseRssItems(xml);
-    const today = pickTodayFromRss(items);
-    renderTodayMenu_fromRss(today);
+    const r = await fetch(`${COMPASS_RSS_LOCAL}?v=${Date.now()}`, { cache:"no-store" });
+    if(!r.ok) throw new Error(`compass_week.xml not found (${r.status})`);
+    const xml=await r.text(); const items=parseRssItems(xml); const today=pickTodayFromRss(items); renderTodayMenu_fromRss(today);
   }catch(e){
     console.warn("RSS load error:", e);
     const cd=id=>document.getElementById(id);
-    cd("menu-date").textContent = new Intl.DateTimeFormat("sv-SE",{weekday:"long",day:"numeric",month:"long"}).format(new Date());
-    cd("menu-content").innerHTML = `<p class="muted">Menyn laddas in…</p>`;
-    document.getElementById("menu-image").src = "";
+    cd("menu-date").textContent=new Intl.DateTimeFormat("sv-SE",{weekday:"long",day:"numeric",month:"long"}).format(new Date());
+    cd("menu-content").innerHTML=`<p class="muted">Menyn laddas in… (${e.message})</p>`;
+    document.getElementById("menu-image").src="";
   }
 }
-
 function renderTodayMenu_fromRss(item){
   const cd=id=>document.getElementById(id);
-  cd("menu-date").textContent = new Intl.DateTimeFormat("sv-SE",{weekday:"long",day:"numeric",month:"long"}).format(new Date());
-
-  if (!item){
-    cd("menu-content").innerHTML = `<p class="muted">Ingen meny publicerad.</p>`;
-    document.getElementById("menu-image").src = "";
-    return;
-  }
-  const title = item.title || "Dagens lunch";
-  const desc  = stripHtml(item.description);
-  cd("menu-content").innerHTML = `
+  cd("menu-date").textContent=new Intl.DateTimeFormat("sv-SE",{weekday:"long",day:"numeric",month:"long"}).format(new Date());
+  if(!item){ cd("menu-content").innerHTML=`<p class="muted">Ingen meny publicerad.</p>`; document.getElementById("menu-image").src=""; return; }
+  const title=item.title||"Dagens lunch"; const desc=stripHtml(item.description);
+  cd("menu-content").innerHTML=`
     <div class="news-item">
       <h3 class="news-title">${title}</h3>
-      <p class="muted">${desc || "—"}</p>
-      ${item.link ? `<p><a href="${item.link}" target="_blank" rel="noopener">Mer info</a></p>` : ""}
+      <p class="muted">${desc||"—"}</p>
+      ${item.link?`<p><a href="${item.link}" target="_blank" rel="noopener">Mer info</a></p>`:""}
     </div>`;
-  document.getElementById("menu-image").src = ""; // RSS usually has no image
+  document.getElementById("menu-image").src="";
 }
-</script>
-
 
 /* ================= BOOT ================= */
 (async function init(){
   try{
-    await loadNews();          // ok if unconfigured; shows placeholder
-    updatePoster();            // prime poster
-    startRotation();           // start slide loop
-    // refresh menu every 30 min + midnight reload for day rollover
+    await loadNews();
+    updatePoster();
+    startRotation();
     setInterval(loadCompassTodayFromRss, 30*60*1000);
     const now=new Date(); const next=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,0,5);
     setTimeout(()=>location.reload(), next-now);
