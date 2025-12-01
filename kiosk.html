@@ -404,7 +404,7 @@ function renderTodayMenu_fromRss(item){
     updatePoster();            // prime poster
     startRotation();           // start slide loop
     // refresh menu every 30 min + midnight reload for day rollover
-    setInterval(loadCompassToday, 30*60*1000);
+    setInterval(loadCompassTodayFromRss, 30*60*1000);
     const now=new Date(); const next=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,0,5);
     setTimeout(()=>location.reload(), next-now);
   }catch(e){ console.error(e); }
