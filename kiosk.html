@@ -193,7 +193,9 @@ function showSlide(i){
   // slide-specific loads
   if (slide.dataset.type === 'iframe' && CONFIG.kpiUrl) document.getElementById('kpi').src = CONFIG.kpiUrl;
   if (slide.dataset.type === 'images') updatePoster();
-  if (slide.dataset.type === 'menu') loadCompassToday();
+  if (slide.dataset.type === 'menu') {
+  loadCompassTodayFromRss(); // <-- call RSS loader here
+}
 
   // progress bar animation
   const bar = document.getElementById('progressbar');
@@ -318,63 +320,82 @@ function maybeRotatePoster(){
 }
 setInterval(maybeRotatePoster, 7000);
 
-/* ================= COMPASS MENU ================= */
-const COMPASS_JSON_LOCAL = "data/compass.json";
+<script>
+/* ===== COMPASS MENU via weekly RSS mirror ===== */
+const COMPASS_RSS_LOCAL = "data/compass_week.xml";
 
-function todayKey(){
-  const n=new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
-}
-function extractDateKey(it){
-  const candidates=[it.pubDate,it.date,it.published,it.startDate,it.validFor,it.day,it.title,it.description].filter(Boolean);
-  for (const x of candidates){
-    const d = new Date(x); if (!isNaN(d)) return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const m = String(x).match(/(20\d{2})-(\d{2})-(\d{2})/); if (m) return `${m[1]}-${m[2]}-${m[3]}`;
-  }
-  return null;
+function ymd(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+
+function sameDay(a,b){ return ymd(a) === ymd(b); }
+
+function parseRssItems(xmlText){
+  const xml = new DOMParser().parseFromString(xmlText, "text/xml");
+  const items = Array.from(xml.querySelectorAll("item")).map(it => ({
+    title: it.querySelector("title")?.textContent?.trim() || "",
+    description: it.querySelector("description")?.textContent || "",
+    pubDate: it.querySelector("pubDate")?.textContent || "",
+    link: it.querySelector("link")?.textContent || ""
+  }));
+  return items;
 }
 
-async function loadCompassToday(){
+function pickTodayFromRss(items){
+  // 1) Try pubDate match
+  const today = new Date();
+  const byDate = items.find(it => {
+    const d = new Date(it.pubDate);
+    return !isNaN(d) && sameDay(d, today);
+  });
+  if (byDate) return byDate;
+
+  // 2) Fallback: Swedish weekday name in title/description
+  const wd = new Intl.DateTimeFormat("sv-SE",{weekday:"long"}).format(today).toLowerCase();
+  return items.find(it =>
+    (it.title || "").toLowerCase().includes(wd) ||
+    (it.description || "").toLowerCase().includes(wd)
+  ) || items[0] || null;
+}
+
+function stripHtml(s){ return (s||"").replace(/<[^>]+>/g,"").replace(/&nbsp;/g," ").trim(); }
+
+async function loadCompassTodayFromRss(){
   try{
-    const r = await fetch(COMPASS_JSON_LOCAL,{ cache:'no-store' });
-    if (!r.ok) throw new Error('compass.json not found');
-    const data = await r.json();
-    const items = Array.isArray(data) ? data : (data.items || []);
-    const t = todayKey();
-    let it = items.find(i => extractDateKey(i) === t);
-    if (!it){
-      const wd = new Intl.DateTimeFormat('sv-SE',{weekday:'long'}).format(new Date()).toLowerCase();
-      it = items.find(i => JSON.stringify(i).toLowerCase().includes(wd));
-    }
-    if (!it) it = items[0] || null;
-    renderTodayMenu_fromJson(it);
+    const r = await fetch(COMPASS_RSS_LOCAL, { cache: "no-store" });
+    if (!r.ok) throw new Error("compass_week.xml not found");
+    const xml = await r.text();
+    const items = parseRssItems(xml);
+    const today = pickTodayFromRss(items);
+    renderTodayMenu_fromRss(today);
   }catch(e){
-    console.warn('Menu load skipped:', e.message);
-    const cd = id => document.getElementById(id);
-    cd('menu-date').textContent = '—';
-    cd('menu-content').innerHTML = '<p class="muted">Menyn laddas in…</p>';
-    document.getElementById('menu-image').src = '';
+    console.warn("RSS load error:", e);
+    const cd=id=>document.getElementById(id);
+    cd("menu-date").textContent = new Intl.DateTimeFormat("sv-SE",{weekday:"long",day:"numeric",month:"long"}).format(new Date());
+    cd("menu-content").innerHTML = `<p class="muted">Menyn laddas in…</p>`;
+    document.getElementById("menu-image").src = "";
   }
 }
 
-function renderTodayMenu_fromJson(it){
+function renderTodayMenu_fromRss(item){
   const cd=id=>document.getElementById(id);
-  if (!it){
-    cd('menu-date').textContent='Ingen meny';
-    cd('menu-content').innerHTML='';
-    cd('menu-image').src='';
+  cd("menu-date").textContent = new Intl.DateTimeFormat("sv-SE",{weekday:"long",day:"numeric",month:"long"}).format(new Date());
+
+  if (!item){
+    cd("menu-content").innerHTML = `<p class="muted">Ingen meny publicerad.</p>`;
+    document.getElementById("menu-image").src = "";
     return;
   }
-  cd('menu-date').textContent = new Intl.DateTimeFormat('sv-SE',{weekday:'long',day:'numeric',month:'long'}).format(new Date());
-  const title = it.title || it.name || 'Dagens lunch';
-  const desc  = (it.description || it.summary || '').replace(/<[^>]+>/g,'').trim();
-  cd('menu-content').innerHTML = `
+  const title = item.title || "Dagens lunch";
+  const desc  = stripHtml(item.description);
+  cd("menu-content").innerHTML = `
     <div class="news-item">
-      <h3 class="news-title">${escapeHtml(title)}</h3>
-      <p class="muted">${escapeHtml(desc)}</p>
-      ${it.url ? `<p><a href="${it.url}" target="_blank" rel="noopener">Mer info</a></p>` : ''}
+      <h3 class="news-title">${title}</h3>
+      <p class="muted">${desc || "—"}</p>
+      ${item.link ? `<p><a href="${item.link}" target="_blank" rel="noopener">Mer info</a></p>` : ""}
     </div>`;
-  cd('menu-image').src = it.image || '';
+  document.getElementById("menu-image").src = ""; // RSS usually has no image
 }
+</script>
+
 
 /* ================= BOOT ================= */
 (async function init(){
