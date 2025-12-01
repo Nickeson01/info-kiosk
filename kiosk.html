@@ -3,58 +3,86 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kiosk Screen – Hands‑off Rotator</title>
+  <title>Kiosk Screen – Hands-off Rotator</title>
   <style>
-    /* Reset-ish */
-    :root {
-      --offWhite: rgba(255, 255, 236,1);
-      /*
-      --blue: rgba(X, X, X,1);
-      --offWhite: rgba(X, X, X,1);
-      --offWhite: rgba(X, X, X,1);
-      */
+    /* ===== Theme / palette ===== */
+    :root{
+      --offWhite: rgba(255,255,236,1);
+      --cardBg: #121a2a;
+      --cardBorder: #1b2a44;
+      --textOnCard: #e7ecf5;
+      --mutedOnCard: #a9b6d2;
+      --ruleOnCard: #243452;
+      --imgBorder: #223353;
+      --statusBg: #0f1a2e;
+      --statusBorder: #203356;
+      --progressBg: #1e2c47;
+      --progressFill1: #5aa0ff;
+      --progressFill2: #77bbff;
     }
-    
-    html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:var(--offWhite); color: #222; }
+
+    /* ===== Base ===== */
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--offWhite);
+      color: #222;  /* base text (outside .card) */
+    }
     #app { display:flex; height:100%; width:100%; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+
+    /* Slides */
     .slide { position:absolute; inset:0; display:none; padding:3vh 3vw; box-sizing:border-box; }
     .slide.active { display:block; animation: fade 800ms ease-in-out; }
     @keyframes fade { from { opacity:0 } to { opacity:1 } }
-    .card { background: #121a2a; border:1px solid #1b2a44; border-radius:24px; padding:3vh 3vw; height:100%; box-sizing:border-box; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+
+    /* Card (dark surface) */
+    .card {
+      background: var(--cardBg);
+      border: 1px solid var(--cardBorder);
+      border-radius: 24px;
+      padding: 3vh 3vw;
+      height: 100%;
+      box-sizing: border-box;
+      box-shadow: 0 10px 30px rgba(0,0,0,.3);
+      color: var(--textOnCard);
+    }
+
     .row { display:flex; gap:2vw; height:100%; }
     .col { flex:1; min-width:0; display:flex; flex-direction:column; }
-    .muted { color:#a9b6d2; }
-    h1, h2, h3 { margin: 0 0 .5rem 0; line-height:1.15; }
+
+    .muted { color: var(--mutedOnCard); }
+    h1, h2, h3 { margin: 0 0 .5rem 0; line-height:1.15; color: var(--textOnCard); }
     h1 { font-size: clamp(28px, 4vw, 54px); }
     h2 { font-size: clamp(22px, 3vw, 36px); }
-    p { font-size: clamp(16px, 1.6vw, 22px); }
+    p  { font-size: clamp(16px, 1.6vw, 22px); }
 
-    /* Image wall */
-    .imgfit { width:100%; height:100%; object-fit:cover; border-radius:18px; border:1px solid #223353; }
+    /* Image fit */
+    .imgfit { width:100%; height:100%; object-fit:cover; border-radius:18px; border:1px solid var(--imgBorder); }
 
     /* News list */
     .news-list { overflow:auto; padding-right:1rem; }
-    .news-item { padding:1rem 0; border-bottom:1px dashed #243452; }
+    .news-item { padding:1rem 0; border-bottom:1px dashed var(--ruleOnCard); }
     .news-item:last-child { border-bottom:0; }
     .news-title { font-size: clamp(18px, 2vw, 28px); margin:0 0 .25rem; }
-    .news-meta { font-size: .9em; color:#95a7c7; }
+    .news-meta { font-size: .9em; color: #95a7c7; }
 
-    /* Clock / status bar */
+    /* Clock / status pill */
     .status { position:absolute; bottom:1vh; right:1vw; font-size: clamp(12px, 1.2vw, 16px); color:#8aa0c6; }
-    .pill { display:inline-block; background:#0f1a2e; border:1px solid #203356; padding:.35rem .6rem; border-radius:999px; margin-left:.5rem; }
+    .pill { display:inline-block; background:var(--statusBg); border:1px solid var(--statusBorder); padding:.35rem .6rem; border-radius:999px; margin-left:.5rem; }
 
     /* Progress bar */
-    .progress { position:absolute; left:0; bottom:0; height:6px; background:#1e2c47; width:100%; }
-    .progress > div { height:100%; width:0; background:linear-gradient(90deg,#5aa0ff,#7bf); transition:width .2s linear; }
+    .progress { position:absolute; left:0; bottom:0; height:6px; background:var(--progressBg); width:100%; }
+    .progress > div { height:100%; width:0; background:linear-gradient(90deg,var(--progressFill1),var(--progressFill2)); }
 
-    /* Fullscreen helper button (optional for setup) */
+    /* Fullscreen helper */
     .fs-btn { position:absolute; top:1vh; right:1vw; background:#182744; border:1px solid #28406e; color:#dbe7ff; padding:.5rem .8rem; border-radius:10px; cursor:pointer; font-size:14px; opacity:.6; }
     .fs-btn:hover { opacity:1; }
   </style>
 </head>
 <body>
 <div id="app">
-  <!-- Slide 1: SharePoint News -->
+  <!-- Slide 1: SharePoint News (leave as placeholder if not configured) -->
   <section class="slide active" data-type="news" data-duration="20">
     <div class="card row">
       <div class="col" style="flex:1.6">
@@ -68,7 +96,7 @@
     </div>
   </section>
 
-  <!-- Slide 2: Image / Poster -->
+  <!-- Slide 2: Posters (uses placeholder images; replace with your own URLs/files) -->
   <section class="slide" data-type="images" data-duration="12">
     <div class="card row">
       <div class="col" style="flex:1">
@@ -77,31 +105,27 @@
       <div class="col" style="flex:1">
         <h1>Upcoming</h1>
         <h2 id="poster-title">Weekly highlights</h2>
-        <p id="poster-desc" class="muted">Drop images in a folder; they rotate automatically.</p>
+        <p id="poster-desc" class="muted">Drop images in the repo and set their paths in CONFIG.posters.</p>
       </div>
     </div>
   </section>
 
-  <!-- Slide 3: Iframe (optional KPI, dashboard, sheet, etc.) -->
+  <!-- Slide 3: KPI / Iframe -->
   <section class="slide" data-type="iframe" data-duration="18">
     <div class="card" style="height:100%">
       <h1 style="margin-bottom:1rem">KPI Dashboard</h1>
-      <iframe id="kpi" src="about:blank" style="width:100%; height: calc(100% - 4rem); border:1px solid #223353; border-radius:18px; background:#0b1220;"></iframe>
+      <iframe id="kpi" src="about:blank" style="width:100%; height: calc(100% - 4rem); border:1px solid var(--imgBorder); border-radius:18px; background:#0b1220;"></iframe>
     </div>
   </section>
-  
-  <!-- Slide 4: Food of the Day -->
+
+  <!-- Slide 4: Food of the Day (Compass JSON) -->
   <section class="slide" data-type="menu" data-duration="15">
     <div class="card row">
       <div class="col" style="flex: 1.6;">
         <h1>Dagens lunch</h1>
         <p class="muted" id="menu-date">–</p>
-  
-        <div id="menu-content" class="news-list">
-          <!-- Filled dynamically with Compass JSON -->
-        </div>
+        <div id="menu-content" class="news-list"></div>
       </div>
-  
       <div class="col" style="flex: 1;">
         <img id="menu-image" class="imgfit" alt="Menu image" />
       </div>
@@ -114,128 +138,99 @@
 </div>
 
 <script>
-/**
- * CONFIG – edit these for your environment (no paid services required)
- */
+/* ================= CONFIG ================= */
 const CONFIG = {
   rotationSecondsFallback: 15,
 
-  // 1) SharePoint News feed – pick ONE of the two approaches below.
+  // SharePoint (set either rssUrl OR Graph credentials; leave empty to show placeholder)
   sharepoint: {
-    // (A) If your SharePoint exposes RSS for News, paste the RSS URL here (often works if enabled).
-    // Example (you must replace): 'https://YOURTENANT.sharepoint.com/sites/YOURSITE/_layouts/15/listfeed.aspx?List=%7BGUID%7D'
-    rssUrl: '',
-
-    // (B) Microsoft Graph (requires M365 sign-in; no extra cost; works reliably in most tenants).
-    // Steps: register a Public client SPA app in Entra ID (redirect = current URL), grant delegated Sites.Read.All (admin consent), paste IDs.
-    graph: {
-      tenantId: '', // e.g., 'contoso.onmicrosoft.com' or a GUID
-      clientId: '', // your app registration (Application ID)
-      siteId: '',   // Graph site ID for the target SharePoint site
-      // You can find siteId via: https://graph.microsoft.com/v1.0/sites?search=YourSiteName
-      scope: 'Sites.Read.All'
-    }
+    rssUrl: '', // e.g. 'https://TENANT.sharepoint.com/sites/SITE/_layouts/15/listfeed.aspx?List=%7BGUID%7D'
+    graph: { tenantId:'', clientId:'', siteId:'', scope:'Sites.Read.All' }
   },
 
-  // 2) Poster / image rotation (no auth). Put images in a public or intra‑net reachable folder, or serve from the same directory.
+  // Poster images (replace with your real files/paths or external URLs)
   posters: [
-    // Replace with your actual image URLs.
-    { src: 'poster1.jpg', title: 'Safety Week', desc: 'Wear PPE. Toolbox talk at 09:15.' },
-    { src: 'poster2.jpg', title: 'Fika Friday', desc: 'Conference Room B, 14:30.' },
-    { src: 'poster3.jpg', title: 'New Product', desc: 'Launch recap & photos.' }
+    { src: 'https://picsum.photos/1200/800?1', title: 'Safety Week', desc: 'Wear PPE. Toolbox talk 09:15.' },
+    { src: 'https://picsum.photos/1200/800?2', title: 'Fika Friday', desc: 'Conference Room B, 14:30.' },
+    { src: 'https://picsum.photos/1200/800?3', title: 'New Product', desc: 'Launch recap & photos.' }
   ],
 
-  // 3) Optional KPI iframe (publish a Google Sheet chart, Power BI report with org auth, Grafana anon view, etc.)
-  kpiUrl: '' // e.g., a published web view
+  // KPI iframe (optional)
+  kpiUrl: '' // e.g. published Grafana/Power BI/Sheet URL; leave blank to keep about:blank
 };
 
-/**
- * UTILITIES
- */
-function openFullscreen(){
-  const el = document.documentElement;
-  if (el.requestFullscreen) el.requestFullscreen();
-}
-
-function fmtDate(d){
-  return d.toLocaleString(undefined, { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
-}
-
-function tickClock(){
-  document.getElementById('clock').textContent = fmtDate(new Date());
-}
+/* ================= UTILITIES ================= */
+function openFullscreen(){ const el=document.documentElement; if (el.requestFullscreen) el.requestFullscreen(); }
+function fmtDate(d){ return d.toLocaleString(undefined,{weekday:'short',year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}); }
+function tickClock(){ document.getElementById('clock').textContent = fmtDate(new Date()); }
 setInterval(tickClock, 1000); tickClock();
 
-/**
- * SLIDE ROTATION
- */
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+/* ================= ROTATION (per-slide timing) ================= */
 let slideIndex = 0;
 const slides = Array.from(document.querySelectorAll('.slide'));
 let nextTimer = null;
-let progressTimer = null;
+
+function updateStatus(type){
+  const m = {
+    news: 'SharePoint news',
+    images: 'Poster rotation',
+    iframe: 'Embedded dashboard',
+    menu: 'Dagens lunch'
+  };
+  document.getElementById('status-pill').textContent = m[type] || '…';
+}
 
 function showSlide(i){
   slides.forEach(s => s.classList.remove('active'));
-  const slide = slides[i];
-  if (!slide) return;
+  const slide = slides[i]; if (!slide) return;
   slide.classList.add('active');
 
   const seconds = Number(slide.dataset.duration) || CONFIG.rotationSecondsFallback;
-
   updateStatus(slide.dataset.type);
-  if (slide.dataset.type === 'iframe' && CONFIG.kpiUrl) {
-    document.getElementById('kpi').src = CONFIG.kpiUrl;
-  }
 
-  // progress bar animate per slide
+  // slide-specific loads
+  if (slide.dataset.type === 'iframe' && CONFIG.kpiUrl) document.getElementById('kpi').src = CONFIG.kpiUrl;
+  if (slide.dataset.type === 'images') updatePoster();
+  if (slide.dataset.type === 'menu') loadCompassToday();
+
+  // progress bar animation
   const bar = document.getElementById('progressbar');
   bar.style.transition = 'none';
   bar.style.width = '0%';
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      bar.style.transition = `width ${seconds}s linear`;
-      bar.style.width = '100%';
-    });
-  });
+  requestAnimationFrame(()=>{ requestAnimationFrame(()=>{
+    bar.style.transition = `width ${seconds}s linear`;
+    bar.style.width = '100%';
+  });});
 
   clearTimeout(nextTimer);
-  clearInterval(progressTimer);
-  progressTimer = null;
-
-  nextTimer = setTimeout(() => {
+  nextTimer = setTimeout(()=>{
     slideIndex = (slideIndex + 1) % slides.length;
     showSlide(slideIndex);
   }, seconds * 1000);
 }
 
-function startRotation(){
-  clearTimeout(nextTimer);
-  clearInterval(progressTimer);
-  showSlide(slideIndex);
-}
+function startRotation(){ clearTimeout(nextTimer); showSlide(slideIndex); }
 
-
-/**
- * NEWS: Either via RSS (simplest, if enabled) or via Graph with MSAL.
- */
+/* ================= NEWS ================= */
 async function loadNews(){
   const newsEl = document.getElementById('news');
   newsEl.innerHTML = '<p class="muted">Loading news…</p>';
-
-  try {
-    if (CONFIG.sharepoint.rssUrl) {
+  try{
+    if (CONFIG.sharepoint.rssUrl){
       const items = await fetchRssItems(CONFIG.sharepoint.rssUrl);
       renderNews(items);
-    } else if (CONFIG.sharepoint.graph.tenantId && CONFIG.sharepoint.graph.clientId && CONFIG.sharepoint.graph.siteId) {
+    } else if (CONFIG.sharepoint.graph.tenantId && CONFIG.sharepoint.graph.clientId && CONFIG.sharepoint.graph.siteId){
       await ensureMsalLoaded();
       const items = await fetchGraphNews();
       renderNews(items);
     } else {
       newsEl.innerHTML = '<p class="muted">No SharePoint source configured yet.</p>';
     }
-  } catch (e){
-    newsEl.innerHTML = '<p class="muted">Failed to load news.</p>';
+  }catch(e){
     console.error(e);
+    newsEl.innerHTML = '<p class="muted">Failed to load news.</p>';
   }
 }
 
@@ -244,72 +239,58 @@ function renderNews(items){
   if (!items || !items.length){ newsEl.innerHTML = '<p class="muted">No recent posts.</p>'; return; }
   const top = items[0];
   document.getElementById('news-image').src = top.image || '';
-  newsEl.innerHTML = items.slice(0,6).map(item => `
+  newsEl.innerHTML = items.slice(0,6).map(item=>`
     <div class="news-item">
       <h3 class="news-title">${escapeHtml(item.title)}</h3>
-      <div class="news-meta">${new Date(item.date).toLocaleDateString()} · ${item.author || ''}</div>
-      <p class="muted">${escapeHtml(item.summary || '').slice(0,220)}${(item.summary||'').length>220?'…':''}</p>
+      <div class="news-meta">${new Date(item.date).toLocaleDateString()} · ${escapeHtml(item.author||'')}</div>
+      <p class="muted">${escapeHtml(item.summary||'').slice(0,220)}${(item.summary||'').length>220?'…':''}</p>
     </div>
   `).join('');
 }
 
-function escapeHtml(s){
-  return (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m]));
-}
-
 async function fetchRssItems(url){
-  // Many tenants block CORS for RSS; if so, use Graph method instead.
-  const res = await fetch(url);
-  const text = await res.text();
-  const parser = new DOMParser();
-  const xml = parser.parseFromString(text, 'text/xml');
-  const items = Array.from(xml.querySelectorAll('item')).map(it => ({
+  const res = await fetch(url); const text = await res.text();
+  const xml = new DOMParser().parseFromString(text,'text/xml');
+  return Array.from(xml.querySelectorAll('item')).map(it=>({
     title: it.querySelector('title')?.textContent || 'Untitled',
     date: it.querySelector('pubDate')?.textContent || new Date().toISOString(),
     summary: it.querySelector('description')?.textContent || '',
     author: it.querySelector('author')?.textContent || '',
     link: it.querySelector('link')?.textContent || '',
-    image: (it.querySelector('enclosure')?.getAttribute('url')) || ''
+    image: it.querySelector('enclosure')?.getAttribute('url') || ''
   }));
-  return items;
 }
 
-// --- Microsoft Graph path (SPA, no backend required) ---
+/* ---- Microsoft Graph path (optional) ---- */
 let msalInstance = null; let graphToken = null;
 function ensureMsalLoaded(){
-  return new Promise((resolve) => {
-    if (window.msal) return resolve();
-    const s = document.createElement('script');
-    s.src = 'https://alcdn.msauth.net/browser/2.38.4/js/msal-browser.min.js';
-    s.onload = resolve; document.head.appendChild(s);
+  return new Promise(res=>{
+    if (window.msal) return res();
+    const s=document.createElement('script'); s.src='https://alcdn.msauth.net/browser/2.38.4/js/msal-browser.min.js';
+    s.onload=res; document.head.appendChild(s);
   });
 }
-
 async function getMsal(){
   if (!msalInstance){
     msalInstance = new msal.PublicClientApplication({
-      auth: { clientId: CONFIG.sharepoint.graph.clientId, authority: `https://login.microsoftonline.com/${CONFIG.sharepoint.graph.tenantId}` },
-      cache: { cacheLocation: 'localStorage' }
+      auth:{ clientId:CONFIG.sharepoint.graph.clientId, authority:`https://login.microsoftonline.com/${CONFIG.sharepoint.graph.tenantId}` },
+      cache:{ cacheLocation:'localStorage' }
     });
   }
-  // Try SSO / silent first
-  const accounts = msalInstance.getAllAccounts();
-  if (!accounts.length){
-    await msalInstance.loginPopup({ scopes:[`https://graph.microsoft.com/${CONFIG.sharepoint.graph.scope}`] });
-  }
+  const accts = msalInstance.getAllAccounts();
+  if (!accts.length) await msalInstance.loginPopup({ scopes:[`https://graph.microsoft.com/${CONFIG.sharepoint.graph.scope}`] });
   const account = msalInstance.getAllAccounts()[0];
-  const res = await msalInstance.acquireTokenSilent({ account, scopes:[`https://graph.microsoft.com/${CONFIG.sharepoint.graph.scope}`] }).catch(() => msalInstance.acquireTokenPopup({ scopes:[`https://graph.microsoft.com/${CONFIG.sharepoint.graph.scope}`] }));
+  const res = await msalInstance.acquireTokenSilent({ account, scopes:[`https://graph.microsoft.com/${CONFIG.sharepoint.graph.scope}`] })
+             .catch(()=> msalInstance.acquireTokenPopup({ scopes:[`https://graph.microsoft.com/${CONFIG.sharepoint.graph.scope}`] }));
   graphToken = res.accessToken;
 }
-
 async function fetchGraphNews(){
   await getMsal();
-  // News are Site Pages with PromotedState == 2
   const siteId = CONFIG.sharepoint.graph.siteId;
   const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/Site%20Pages/items?expand=fields&$filter=fields/PromotedState eq 2&$orderby=fields/FirstPublishedDate desc&$top=8`;
-  const res = await fetch(url, { headers: { Authorization: `Bearer ${graphToken}` } });
+  const res = await fetch(url, { headers:{ Authorization:`Bearer ${graphToken}` } });
   const json = await res.json();
-  const items = (json.value||[]).map(v => ({
+  return (json.value||[]).map(v=>({
     title: v.fields?.Title,
     date: v.fields?.FirstPublishedDate || v.fields?.Created,
     summary: v.fields?.Description || v.fields?.Excerpt || '',
@@ -317,12 +298,9 @@ async function fetchGraphNews(){
     link: v.webUrl || '',
     image: v.fields?.BannerImageUrl || ''
   }));
-  return items;
 }
 
-/**
- * POSTER ROTATION
- */
+/* ================= POSTERS ================= */
 let posterIndex = 0;
 function updatePoster(){
   if (!CONFIG.posters.length) return;
@@ -333,49 +311,83 @@ function updatePoster(){
   posterIndex++;
 }
 
+/* Only rotate posters while poster slide is visible */
 function maybeRotatePoster(){
   const active = document.querySelector('.slide.active');
   if (active && active.dataset.type === 'images') updatePoster();
 }
 setInterval(maybeRotatePoster, 7000);
 
-/**
- * BOOT
- */
+/* ================= COMPASS MENU ================= */
+const COMPASS_JSON_LOCAL = "data/compass.json";
+
+function todayKey(){
+  const n=new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+}
+function extractDateKey(it){
+  const candidates=[it.pubDate,it.date,it.published,it.startDate,it.validFor,it.day,it.title,it.description].filter(Boolean);
+  for (const x of candidates){
+    const d = new Date(x); if (!isNaN(d)) return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const m = String(x).match(/(20\d{2})-(\d{2})-(\d{2})/); if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+  }
+  return null;
+}
+
+async function loadCompassToday(){
+  try{
+    const r = await fetch(COMPASS_JSON_LOCAL,{ cache:'no-store' });
+    if (!r.ok) throw new Error('compass.json not found');
+    const data = await r.json();
+    const items = Array.isArray(data) ? data : (data.items || []);
+    const t = todayKey();
+    let it = items.find(i => extractDateKey(i) === t);
+    if (!it){
+      const wd = new Intl.DateTimeFormat('sv-SE',{weekday:'long'}).format(new Date()).toLowerCase();
+      it = items.find(i => JSON.stringify(i).toLowerCase().includes(wd));
+    }
+    if (!it) it = items[0] || null;
+    renderTodayMenu_fromJson(it);
+  }catch(e){
+    console.warn('Menu load skipped:', e.message);
+    const cd = id => document.getElementById(id);
+    cd('menu-date').textContent = '—';
+    cd('menu-content').innerHTML = '<p class="muted">Menyn laddas in…</p>';
+    document.getElementById('menu-image').src = '';
+  }
+}
+
+function renderTodayMenu_fromJson(it){
+  const cd=id=>document.getElementById(id);
+  if (!it){
+    cd('menu-date').textContent='Ingen meny';
+    cd('menu-content').innerHTML='';
+    cd('menu-image').src='';
+    return;
+  }
+  cd('menu-date').textContent = new Intl.DateTimeFormat('sv-SE',{weekday:'long',day:'numeric',month:'long'}).format(new Date());
+  const title = it.title || it.name || 'Dagens lunch';
+  const desc  = (it.description || it.summary || '').replace(/<[^>]+>/g,'').trim();
+  cd('menu-content').innerHTML = `
+    <div class="news-item">
+      <h3 class="news-title">${escapeHtml(title)}</h3>
+      <p class="muted">${escapeHtml(desc)}</p>
+      ${it.url ? `<p><a href="${it.url}" target="_blank" rel="noopener">Mer info</a></p>` : ''}
+    </div>`;
+  cd('menu-image').src = it.image || '';
+}
+
+/* ================= BOOT ================= */
 (async function init(){
-  try {
-    await loadNews();
-    updatePoster();
-    startRotation();
-  } catch (e){ console.error(e); }
+  try{
+    await loadNews();          // ok if unconfigured; shows placeholder
+    updatePoster();            // prime poster
+    startRotation();           // start slide loop
+    // refresh menu every 30 min + midnight reload for day rollover
+    setInterval(loadCompassToday, 30*60*1000);
+    const now=new Date(); const next=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,0,5);
+    setTimeout(()=>location.reload(), next-now);
+  }catch(e){ console.error(e); }
 })();
 </script>
-  <script>
-    // Compass JSON integration
-    const COMPASS_JSON_LOCAL = "data/compass.json";
-    function todayKey(){ const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; }
-    
-    function extractDateKey(it){const c=[it.pubDate,it.date,it.published,it.startDate,it.validFor,it.day,it.title,it.description].filter(Boolean);
-      for(const x of c){const d=new Date(x);if(!isNaN(d)) return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        const m=String(x).match(/(20\d{2})-(\d{2})-(\d{2})/);if(m) return `${m[1]}-${m[2]}-${m[3]}`;} return null;}
-    
-    async function loadCompassToday(){const r=await fetch(COMPASS_JSON_LOCAL,{cache:'no-store'});const data=await r.json();const items=Array.isArray(data)?data:(data.items||[]);
-      const t=todayKey();let it=items.find(i=>extractDateKey(i)===t);
-      if(!it){const wd=new Intl.DateTimeFormat('sv-SE',{weekday:'long'}).format(new Date()).toLowerCase();it=items.find(i=>JSON.stringify(i).toLowerCase().includes(wd));}
-      if(!it) it=items[0]||null;renderTodayMenu_fromJson(it);} 
-    
-    function renderTodayMenu_fromJson(it){const cd=id=>document.getElementById(id);
-      if(!it){cd('menu-date').textContent='Ingen meny';cd('menu-content').innerHTML='';cd('menu-image').src='';return;}
-      cd('menu-date').textContent=new Intl.DateTimeFormat('sv-SE',{weekday:'long',day:'numeric',month:'long'}).format(new Date());
-      const title=it.title||it.name||'Dagens lunch';const desc=(it.description||it.summary||'').replace(/<[^>]+>/g,'');
-      cd('menu-content').innerHTML=`<div class="news-item"><h3 class="news-title">${title}</h3><p class="muted">${desc}</p></div>`;
-      cd('menu-image').src=it.image||'';}
-    
-    function scheduleMenuAuto(){setInterval(loadCompassToday,30*60*1000);
-      const n=new Date();const next=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,0,0,5);
-      setTimeout(()=>location.reload(),next-n);} 
-    loadCompassToday(); scheduleMenuAuto();
-    
-  </script>
 </body>
 </html>
