@@ -92,7 +92,7 @@
   </section>
   
   <!-- Slide 1: SharePoint News -->
-  <section class="slide" data-type="news" data-duration="20">
+  <section class="slide" data-type="news" data-duration="30">
     <div class="card row">
       <div class="col" style="flex:1.6">
         <h1>Company News</h1>
@@ -118,7 +118,8 @@
       </div>
     </div>
   </section>
-
+  
+  /*
   <!-- Slide 3: KPI / Iframe -->
   <section class="slide" data-type="iframe" data-duration="18">
     <div class="card" style="height:100%">
@@ -126,7 +127,8 @@
       <iframe id="kpi" src="about:blank" style="width:100%; height: calc(100% - 4rem); border:1px solid var(--imgBorder); border-radius:18px; background:#0b1220;"></iframe>
     </div>
   </section>
-
+  */
+  
   <!-- Slide 4: Food of the Day (Compass via weekly RSS mirror) -->
   <section class="slide" data-type="menu" data-duration="15">
     <div class="card row">
@@ -172,7 +174,7 @@ const slides = Array.from(document.querySelectorAll('.slide'));
 let nextTimer = null;
 
 function updateStatus(type){
-  const m={ single:'Alfa Laval World Map', news:'SharePoint news', images:'Poster rotation', iframe:'Embedded dashboard', menu:'Dagens lunch' };
+  const m={ single:'Alfa Laval World Map', news:'SharePoint news', images:'Poster rotation', menu:'Dagens lunch' };
   document.getElementById('status-pill').textContent = m[type] || '…';
 }
 
