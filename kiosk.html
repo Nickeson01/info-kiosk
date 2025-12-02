@@ -42,6 +42,15 @@
       letter-spacing: .3px;
       margin: 14px 0 6px;
     }
+
+    .imgfull {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      border: 0;
+      border-radius: 0;
+    }
     
     .menu-item   { text-align: center; margin: 8px 0; }
     .menu-item .sv { font-weight: 700; }
@@ -77,8 +86,13 @@
 <body>
 <div id="app">
   
+  <!-- Slide 0: Alfa Laval World Map -->
+  <section class="slide active" data-type="single-image" data-duration="30">
+    <img src="assets/images/AlfaLaval-WorldMap.jpg" class="imgfull" alt="Alfa Laval World Map">
+  </section>
+  
   <!-- Slide 1: SharePoint News -->
-  <section class="slide active" data-type="news" data-duration="20">
+  <section class="slide" data-type="news" data-duration="20">
     <div class="card row">
       <div class="col" style="flex:1.6">
         <h1>Company News</h1>
@@ -158,7 +172,7 @@ const slides = Array.from(document.querySelectorAll('.slide'));
 let nextTimer = null;
 
 function updateStatus(type){
-  const m={ news:'SharePoint news', images:'Poster rotation', iframe:'Embedded dashboard', menu:'Dagens lunch' };
+  const m={ single-image:'Alfa Laval World Map', news:'SharePoint news', images:'Poster rotation', iframe:'Embedded dashboard', menu:'Dagens lunch' };
   document.getElementById('status-pill').textContent = m[type] || '…';
 }
 
