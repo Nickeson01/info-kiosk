@@ -90,6 +90,11 @@
   <section class="slide active" data-type="single-image" data-duration="30">
     <img src="assets/images/AlfaLaval-WorldMap2.jpg" class="imgfull" alt="Alfa Laval World Map">
   </section>
+
+  <!-- Slide 1: Alfa Laval Lean Digital Factory -->
+  <section class="slide active" data-type="single-image" data-duration="30">
+    <img src="assets/images/LeanDigitalFactoryImage.jpg" class="imgfull" alt="Alfa Laval World Map">
+  </section>
   
   <!-- Slide 1: SharePoint News -->
   <section class="slide" data-type="news" data-duration="30">
@@ -164,7 +169,7 @@ const slides = Array.from(document.querySelectorAll('.slide'));
 let nextTimer = null;
 
 function updateStatus(type){
-  const m={ single:'Alfa Laval World Map', news:'SharePoint news', images:'Poster rotation', menu:'Dagens lunch' };
+  const m={ single:'Alfa Laval World Map', single:'Alfa Laval LDF', news:'SharePoint news', images:'Poster rotation', menu:'Dagens lunch' };
   document.getElementById('status-pill').textContent = m[type] || '…';
 }
 
