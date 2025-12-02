@@ -109,7 +109,8 @@
       </div>
     </div>
   </section>
-
+  
+  /*
   <!-- Slide 2: Posters -->
   <section class="slide" data-type="images" data-duration="12">
     <div class="card row">
@@ -123,6 +124,7 @@
       </div>
     </div>
   </section>
+  */
   
 <!-- Slide: Food of the Day -->
 <section class="slide" data-type="menu" data-duration="15">
@@ -169,7 +171,7 @@ const slides = Array.from(document.querySelectorAll('.slide'));
 let nextTimer = null;
 
 function updateStatus(type){
-  const m={ single:'Alfa Laval World Map', single:'Alfa Laval LDF', news:'SharePoint news', images:'Poster rotation', menu:'Dagens lunch' };
+  const m={ single:'Alfa Laval World Map', single:'Alfa Laval LDF', news:'SharePoint news', menu:'Dagens lunch' };
   document.getElementById('status-pill').textContent = m[type] || '…';
 }
 
@@ -181,7 +183,7 @@ function showSlide(i){
   const seconds = Number(slide.dataset.duration) || CONFIG.rotationSecondsFallback;
   updateStatus(slide.dataset.type);
   
-  if (slide.dataset.type==='images') updatePoster();
+  //if (slide.dataset.type==='images') updatePoster();
   if (slide.dataset.type==='menu') loadCompassTodayFromRss();
 
   const bar = document.getElementById('progressbar');
@@ -210,6 +212,7 @@ async function loadNews(){
     }
   }catch(e){ console.error(e); newsEl.innerHTML='<p class="muted">Failed to load news.</p>'; }
 }
+  
 function renderNews(items){
   const el=document.getElementById('news');
   if(!items||!items.length){ el.innerHTML='<p class="muted">No recent posts.</p>'; return; }
