@@ -119,19 +119,19 @@
     </div>
   </section>
   
-  <!-- Slide 4: Food of the Day (Compass via weekly RSS mirror) -->
-  <section class="slide" data-type="menu" data-duration="15">
-    <div class="card row">
-      <div class="col" style="flex:1.6;">
-        <h1>Dagens lunch</h1>
-        <p class="muted" id="menu-date">–</p>
-        <div id="menu-content" class="news-list"></div>
-      </div>
-      <div class="col" style="flex:1;">
-        <img src="assets/images/FoodImage.jpeg" class="imgfit" alt="Food Image">
-      </div>
+<!-- Slide: Food of the Day -->
+<section class="slide" data-type="menu" data-duration="15">
+  <div class="card row">
+    <div class="col" style="flex:1.6;">
+      <h1>Dagens lunch</h1>
+      <p class="muted" id="menu-date">–</p>
+      <div id="menu-content" class="news-list"></div>
     </div>
-  </section>
+    <div class="col" style="flex:1;">
+      <img id="menu-image" src="assets/images/FoodImage.jpeg" class="imgfit" alt="Food Image">
+    </div>
+  </div>
+</section>
 
   <div class="status"><span id="clock"></span><span class="pill" id="status-pill">Loading…</span></div>
   <div class="progress"><div id="progressbar"></div></div>
@@ -280,7 +280,7 @@ function renderTodayMenu_fromRss(item){
 
   if (!item) {
     cd("menu-content").innerHTML = `<p class="muted">Ingen meny publicerad.</p>`;
-    document.getElementById("menu-image").src = "";
+    //document.getElementById("menu-image").src = "";
     return;
   }
 
@@ -301,7 +301,7 @@ function renderTodayMenu_fromRss(item){
     </div>`;
 
   cd("menu-content").innerHTML = html;
-  document.getElementById("menu-image").src = ""; // usually no image in RSS
+  //document.getElementById("menu-image").src = ""; // usually no image in RSS
 }
 
 /* ---- helpers for menu formatting ---- */
