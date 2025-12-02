@@ -4,6 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Kiosk Screen – Hands-off Rotator</title>
+  <link rel="preload" as="font" href="assets/fonts/alfa-laval-text-regular.woff" type="font/woff" crossorigin>
+  <link rel="stylesheet" href="assets/fonts/fonts.css">
   <style>
     :root{
       --offWhite: rgba(238,238,236,1);
@@ -45,7 +47,7 @@
     .menu-item .sv { font-weight: 700; }
     .menu-item .en { font-style: italic; opacity: .95; }
 
-    html, body { height:100%; margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--offWhite); color:#222; }
+    html, body { height:100%; margin:0; font-family:"AlfaLaval Text", sans-serif; background:var(--heritageBlue); color:var(--offWhite); }
     #app { display:flex; height:100%; width:100%; align-items:center; justify-content:center; position:relative; overflow:hidden; }
     .slide { position:absolute; inset:0; display:none; padding:3vh 3vw; box-sizing:border-box; }
     .slide.active { display:block; animation: fade 800ms ease-in-out; }
