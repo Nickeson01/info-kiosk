@@ -172,7 +172,7 @@ const slides = Array.from(document.querySelectorAll('.slide'));
 let nextTimer = null;
 
 function updateStatus(type){
-  const m={ single-image:'Alfa Laval World Map', news:'SharePoint news', images:'Poster rotation', iframe:'Embedded dashboard', menu:'Dagens lunch' };
+  const m={ single:'Alfa Laval World Map', news:'SharePoint news', images:'Poster rotation', iframe:'Embedded dashboard', menu:'Dagens lunch' };
   document.getElementById('status-pill').textContent = m[type] || '…';
 }
 
