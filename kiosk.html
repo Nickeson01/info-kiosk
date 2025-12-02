@@ -119,14 +119,6 @@
     </div>
   </section>
   
-  <!-- Slide 3: KPI / Iframe -->
-  <section class="slide" data-type="iframe" data-duration="18">
-    <div class="card" style="height:100%">
-      <h1 style="margin-bottom:1rem">KPI Dashboard</h1>
-      <iframe id="kpi" src="about:blank" style="width:100%; height: calc(100% - 4rem); border:1px solid var(--imgBorder); border-radius:18px; background:#0b1220;"></iframe>
-    </div>
-  </section>
-  
   <!-- Slide 4: Food of the Day (Compass via weekly RSS mirror) -->
   <section class="slide" data-type="menu" data-duration="15">
     <div class="card row">
@@ -136,7 +128,7 @@
         <div id="menu-content" class="news-list"></div>
       </div>
       <div class="col" style="flex:1;">
-        <img id="menu-image" class="imgfit" alt="Menu image" />
+        <img src="assets/images/FoodImage.jpeg" class="imgfit" alt="Food Image">
       </div>
     </div>
   </section>
@@ -183,8 +175,7 @@ function showSlide(i){
 
   const seconds = Number(slide.dataset.duration) || CONFIG.rotationSecondsFallback;
   updateStatus(slide.dataset.type);
-
-  if (slide.dataset.type==='iframe' && CONFIG.kpiUrl) document.getElementById('kpi').src = CONFIG.kpiUrl;
+  
   if (slide.dataset.type==='images') updatePoster();
   if (slide.dataset.type==='menu') loadCompassTodayFromRss();
 
