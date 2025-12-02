@@ -2,8 +2,8 @@
   font-family: "AlfaLaval Text";
   src:
     local("AlfaLaval Text"),
-    url("/assets/fonts/alfa-laval-text-regular.woff2") format("woff2"),
-    url("/assets/fonts/alfa-laval-text-regular.woff") format("woff");
+    url("/assets/fonts/AlfaLaval-Regular.woff2") format("woff2"),
+    url("assets/fonts/AlfaLaval-Regular.woff2") format("woff");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -13,8 +13,8 @@
   font-family: "AlfaLaval Text";
   src:
     local("AlfaLaval Text Bold"),
-    url("/assets/fonts/alfa-laval-text-bold.woff2") format("woff2"),
-    url("/assets/fonts/alfa-laval-text-bold.woff") format("woff");
+    url("/assets/fonts/AlfaLaval-Bold.woff2") format("woff2"),
+    url("/assets/fonts/AlfaLaval-Bold.woff") format("woff");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -24,8 +24,8 @@
   font-family: "AlfaLaval Text";
   src:
     local("AlfaLaval Text Italic"),
-    url("/assets/fonts/alfa-laval-text-italic.woff2") format("woff2"),
-    url("/assets/fonts/alfa-laval-text-italic.woff") format("woff");
+    url("/assets/fonts/AlfaLaval-Italic.woff2") format("woff2"),
+    url("/assets/fonts/AlfaLaval-Italic.woff") format("woff");
   font-weight: 400;
   font-style: italic;
   font-display: swap;
