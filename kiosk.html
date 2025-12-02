@@ -262,7 +262,7 @@ async function loadCompassTodayFromRss(){
     const cd=id=>document.getElementById(id);
     cd("menu-date").textContent=new Intl.DateTimeFormat("sv-SE",{weekday:"long",day:"numeric",month:"long"}).format(new Date());
     cd("menu-content").innerHTML=`<p class="muted">Menyn laddas in… (${e.message})</p>`;
-    document.getElementById("menu-image").src="";
+    /*document.getElementById("menu-image").src="";*/
   }
 }
 function renderTodayMenu_fromRss(item){
