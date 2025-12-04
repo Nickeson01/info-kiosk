@@ -1,1 +1,63 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Office Info Screen</title>
+  
+  <link rel="preload" as="font" href="assets/fonts/AlfaLaval-Regular.woff2" type="font/woff2" crossorigin="anonymous">
+  <link rel="stylesheet" href="assets/fonts/fonts.css">
+  
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
 
+<div id="app">
+  
+  <section class="slide active" data-type="image" data-duration="30">
+    <img src="assets/images/AlfaLaval-WorldMap.png" class="imgfull" alt="World Map">
+  </section>
+  
+  <section class="slide" data-type="image" data-duration="30">
+    <img src="assets/images/LeanDigitalFactoryImage.jpg" class="imgfull" alt="Lean Factory">
+  </section>
+  
+  <section class="slide" data-type="news" data-duration="30">
+    <div class="card row">
+      <div class="col" style="flex:1.6">
+        <h1>Nyheter</h1>
+        <p class="muted">Senaste nytt från SharePoint</p>
+        <div id="news-list" class="news-list"></div>
+      </div>
+      <div class="col" style="flex:1">
+        <img id="news-hero-image" class="imgfit" alt="News image" style="display:none;" />
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-type="menu" data-duration="20">
+    <div class="card row">
+      <div class="col" style="flex:1.6;">
+        <h1>Dagens lunch</h1>
+        <div id="menu-date-container"></div>
+        <div id="menu-content" class="news-list"></div>
+      </div>
+      <div class="col" style="flex:1;">
+        <img src="assets/images/FoodImage.jpeg" class="imgfit" alt="Food Image">
+      </div>
+    </div>
+  </section>
+
+  <div class="status">
+    <span id="clock">00:00</span>
+    <span class="pill" id="status-pill">Loading…</span>
+  </div>
+  <div class="progress"><div id="progressbar"></div></div>
+  <button class="fs-btn" id="fs-toggle">Fullscreen</button>
+
+</div>
+
+<script type="module" src="assets/js/app.js"></script>
+
+</body>
+</html>
