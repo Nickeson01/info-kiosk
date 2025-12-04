@@ -1,1 +1,6 @@
-
+{
+  "defaultDuration": 15,
+  "lunchTime": "11:00 – 13:30",
+  "compassRssPath": "data/compass_week.xml",
+  "reloadPageAtMidnight": true
+}
