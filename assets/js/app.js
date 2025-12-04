@@ -133,3 +133,5 @@ function setupMidnightReload() {
 }
 
 init();
+
+window.kioskJumpTo = showSlide;
