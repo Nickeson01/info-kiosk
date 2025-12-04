@@ -69,7 +69,8 @@ function renderMenu(menuItem) {
             "DAGENS VEGETARISKA (Serveras även på GSK)",
             "DAGENS RÄTT (Serveras även på GSK)",
         ];
-        const upperline = line.toLocaleUppercase('sv-SE');
+        
+        const upperLine = line.toLocaleUpperCase('sv-SE');
         
         const isHeader = (line === upperLine && line.length > 3) || knownHeaders.some(h => upperLine.includes(h));
         
