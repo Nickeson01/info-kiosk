@@ -134,4 +134,4 @@ function setupMidnightReload() {
 
 init();
 
-window.kioskJumpTo = showSlide;
+window.JumpToSlide = showSlide;
