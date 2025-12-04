@@ -65,7 +65,13 @@ function renderMenu(menuItem) {
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         // Heuristic: Uppercase lines are usually Headers (e.g. "DAGENS RÄTT")
-        const isHeader = (line === line.toUpperCase() && line.length > 3); 
+        const knowHeaders = [
+            "DAGENS VEGETARISKA (Serveras även på GSK)",
+            "DAGENS RÄTT (Serveras även på GSK)",
+        ];
+        const upperline = line.toLocaleUppercase('sv-SE');
+        
+        const isHeader = (line === upperLine && line.length > 3 || knownHeaders.some(h => upperLine.includes(h)); 
         
         if (isHeader) {
             html += `<div class="menu-section">${escapeHtml(line)}</div>`;
