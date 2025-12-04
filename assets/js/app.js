@@ -71,7 +71,7 @@ function renderMenu(menuItem) {
         ];
         const upperline = line.toLocaleUppercase('sv-SE');
         
-        const isHeader = (line === upperLine && line.length > 3 || knownHeaders.some(h => upperLine.includes(h)); 
+        const isHeader = (line === upperLine && line.length > 3) || knownHeaders.some(h => upperLine.includes(h));
         
         if (isHeader) {
             html += `<div class="menu-section">${escapeHtml(line)}</div>`;
