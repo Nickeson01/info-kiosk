@@ -65,7 +65,7 @@ function renderMenu(menuItem) {
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         // Heuristic: Uppercase lines are usually Headers (e.g. "DAGENS RÄTT")
-        const knowHeaders = [
+        const knownHeaders = [
             "DAGENS VEGETARISKA (Serveras även på GSK)",
             "DAGENS RÄTT (Serveras även på GSK)",
         ];
