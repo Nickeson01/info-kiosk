@@ -66,8 +66,8 @@ function renderMenu(menuItem) {
         const line = lines[i];
         // Heuristic: Uppercase lines are usually Headers (e.g. "DAGENS RÄTT")
         const knownHeaders = [
-            "DAGENS VEGETARISKA (Serveras även på GSK)",
-            "DAGENS RÄTT (Serveras även på GSK)",
+            "DAGENS VEGETARISKA (SERVERAS ÄVEN PÅ GSK)",
+            "DAGENS RÄTT (SERVERAS ÄVEN PÅ GSK)",
         ];
         
         const upperLine = line.toLocaleUpperCase('sv-SE');
