@@ -1,5 +1,6 @@
 
 :root {
+  /* Alfa Laval colours*/
   --offWhite: rgba(238,238,236,1);
   --impactBlue: rgba(0, 104, 255, 1);
   --heritageBlue: rgba(17, 56, 127, 1);
@@ -9,18 +10,17 @@
   --lightBlue: rgba(176, 209, 255, 1);
   --darkSand: rgba(127, 126, 121, 1);
   --sand: rgba(196, 195, 188, 1);
+  --textOnCard: rgba(231, 236, 245, 1);
 
-  --cardBg: #121a2a;
-  --cardBorder: #1b2a44;
-  --textOnCard: #e7ecf5;
-  --mutedOnCard: #a9b6d2;
-  --ruleOnCard: #243452;
-  --imgBorder: #223353;
-  --statusBg: #0f1a2e;
-  --statusBorder: #203356;
-  --progressBg: #1e2c47;
-  --progressFill1: #5aa0ff;
-  --progressFill2: #77bbff;
+  /* Other colours*/
+  --mutedOnCard: rgba(169, 182, 210, 1);
+  --ruleOnCard: rgba(36, 52, 82, 1);
+  --imgBorder: rgba(34, 51, 83, 1);
+  --statusBg: rgba(15, 26, 46, 1);
+  --statusBorder: rgba(32, 51, 86, 1);
+  --progressBg: rgba(30, 44, 71, 1);
+  --progressFill1: rgba(90, 160, 255, 1);
+  --progressFill2: rgba(119, 187, 255, 1);
 }
 
 html, body { height:100%; margin:0; font-family:"AlfaLaval Text", sans-serif; background:var(--heritageBlue); color:var(--offWhite); }
@@ -40,7 +40,7 @@ html, body { height:100%; margin:0; font-family:"AlfaLaval Text", sans-serif; ba
 .imgfit { width:100%; height:100%; object-fit:cover; border-radius:18px; border:1px solid var(--imgBorder); }
 
 /* Typography */
-h1,h2,h3 { margin:0 0 .5rem 0; line-height:1.15; color:var(--offWhite); }
+h1,h2,h3 { margin:0 0 .5rem 0; line-height:1.15; color:var(--offWhite); font-weight: 700;}
 h1 { font-size:clamp(28px,4vw,54px); }
 h2 { font-size:clamp(22px,3vw,36px); }
 p  { font-size:clamp(16px,1.6vw,22px); }
