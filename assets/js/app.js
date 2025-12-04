@@ -1,4 +1,3 @@
-
 import { loadMenuData, loadNewsData } from './data-loader.js';
 
 /* --- STATE & CONFIG --- */
@@ -34,7 +33,7 @@ async function init() {
     // 4. Start Slideshow
     showSlide(0);
 
-    // 5. Setup Midnight Reload (to clear memory/refresh cache)
+    // 5. Setup Midnight Reload
     if (config.reloadPageAtMidnight) setupMidnightReload();
 }
 
@@ -43,42 +42,37 @@ function renderMenu(menuItem) {
     const contentEl = document.getElementById('menu-content');
     const dateContainer = document.getElementById('menu-date-container');
     
-    // Date Header
+    // Date Header (Using en-GB for nice English formatting)
     const now = new Date();
-    const dateStr = new Intl.DateTimeFormat("sv-SE", { weekday:"long", day:"numeric", month:"long" }).format(now);
+    const dateStr = new Intl.DateTimeFormat("en-GB", { weekday:"long", day:"numeric", month:"long" }).format(now);
     dateContainer.innerHTML = `
         <div class="menu-date-text">${capitalize(dateStr)}</div>
         ${config.lunchTime ? `<div class="menu-time">${config.lunchTime}</div>` : ''}
     `;
 
     if (!menuItem) {
-        contentEl.innerHTML = `<p class="muted">Ingen meny tillgänglig idag.</p>`;
+        contentEl.innerHTML = `<p class="muted">No menu available today.</p>`;
         return;
     }
 
-    // Process Description (HTML to Lines)
+    // Process Description
     const tmp = document.createElement('div');
     tmp.innerHTML = menuItem.description.replace(/<br\s*\/?>/gi, '\n');
     const lines = (tmp.textContent || "").split('\n').map(s => s.trim()).filter(Boolean);
 
-    // Group Lines (Headers vs Items)
+    // Group Lines
     let html = '<div class="menu-wrap">';
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        const isHeader = (line === line.toUpperCase() && line.length > 3); // Simple heuristic
+        // Heuristic: Uppercase lines are usually Headers (e.g. "DAGENS RÄTT")
+        const isHeader = (line === line.toUpperCase() && line.length > 3); 
         
         if (isHeader) {
             html += `<div class="menu-section">${escapeHtml(line)}</div>`;
         } else {
-            // Check if next line is English (italic)
-            let sv = line;
-            let en = "";
-            // Very basic check: English usually follows Swedish
-            if (i + 1 < lines.length && !lines[i+1].includes("Å") && !lines[i+1].includes("Ä") && !lines[i+1].includes("Ö")) {
-               // This is a guess, but Compass RSS structure varies. 
-               // For now, let's just print every line as an item if it's not a header.
-            }
-            html += `<div class="menu-item"><div class="sv">${escapeHtml(sv)}</div></div>`;
+            // Note: The dish names themselves will likely remain in Swedish 
+            // because they come directly from the Compass RSS feed.
+            html += `<div class="menu-item"><div class="sv">${escapeHtml(line)}</div></div>`;
         }
     }
     html += '</div>';
@@ -94,29 +88,23 @@ async function showSlide(index) {
     const slide = slides[index];
     slide.classList.add('active');
     
-    // 3. Update Status Text
+    // 3. Update Status Text (English)
     const type = slide.dataset.type;
-    const typeMap = { image: 'Info', news: 'Nyheter', menu: 'Meny' };
-    statusPill.textContent = typeMap[type] || 'Visar';
+    const typeMap = { image: 'Info', news: 'News', menu: 'Menu' };
+    statusPill.textContent = typeMap[type] || 'Showing';
 
-    // 4. Load Data if needed (Just-in-Time)
+    // 4. Load Data
     if (type === 'menu') {
         const item = await loadMenuData(config.compassRssPath);
         renderMenu(item);
     }
-    // if (type === 'news') ... we will add this later
 
     // 5. Timer & Progress Bar
     const duration = parseInt(slide.dataset.duration) || config.defaultDuration;
     
-    // Reset Animation
     progressBar.style.transition = 'none';
     progressBar.style.width = '0%';
-    
-    // Trigger Reflow
-    void progressBar.offsetWidth; 
-    
-    // Start Animation
+    void progressBar.offsetWidth; // Trigger reflow
     progressBar.style.transition = `width ${duration}s linear`;
     progressBar.style.width = '100%';
 
@@ -131,7 +119,8 @@ async function showSlide(index) {
 /* --- UTILS --- */
 function updateClock() {
     const now = new Date();
-    clockEl.textContent = now.toLocaleString('sv-SE', { 
+    // Use en-GB to keep 24h format (14:00) but English text (Thu, 4 Dec)
+    clockEl.textContent = now.toLocaleString('en-GB', { 
         weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
     });
 }
@@ -143,5 +132,4 @@ function setupMidnightReload() {
     setTimeout(() => location.reload(), midnight - now);
 }
 
-// Start
 init();
