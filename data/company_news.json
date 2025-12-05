@@ -1,1 +1,12 @@
-
+[
+  {
+    "title": "Welcome to the Info Screen",
+    "date": "2025-12-05T09:00:00Z",
+    "summary": "This is a test post to ensure the news feed is working correctly. If you see this, the system is reading the JSON file properly."
+  },
+  {
+    "title": "Office Fika Friday",
+    "date": "2025-12-04T14:30:00Z",
+    "summary": "Don't forget to join us for Fika in the main kitchen at 14:30. Cinnamon buns will be served!"
+  }
+]
