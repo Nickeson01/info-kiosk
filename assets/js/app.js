@@ -105,8 +105,8 @@ function renderNews(newsItems) {
         newsItem.style.paddingBottom = '1rem';
 
         newsItem.innerHTML = `
-            <h3 style="margin-bottom: 0.5rem; color: #003366;">${escapeHtml(item.Title)}</h3>
-            <small style="color: #666; display:block; margin-bottom: 0.5rem;">${escapeHtml(item.Created)}</small>
+            <h3>${escapeHtml(item.Title)}</h3>
+            <small>${escapeHtml(item.Created)}</small>
             <p>${escapeHtml(item.Body)}</p>
         `;
         newsList.appendChild(newsItem);
