@@ -57,7 +57,17 @@ export async function loadMenuData(rssUrl) {
 }
 
 export async function loadNewsData() {
-    // Placeholder: We will connect this to company_news.json later
-    // For now, returning an empty array so code doesn't break
-    return []; 
+    try{
+        //Fetch the file stored in the data folder
+        //Make sure its the correct date
+        const res = await fetch('data/company_news.json?v=' + Date.now());
+        //check if the file exists
+        if (!res.ok) throw new Error(`News file not found (${res.status})`);
+        //Parse JSON and return it
+        const newsItems = await res.json();
+        return newsItems;
+    } catch(e) {
+        console.warn("Could not load news:", e);
+        return []; // Return empty list so the app doesn't crash
+    }
 }
