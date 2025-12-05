@@ -42,7 +42,7 @@ function renderMenu(menuItem) {
     const contentEl = document.getElementById('menu-content');
     const dateContainer = document.getElementById('menu-date-container');
     
-    // Date Header (Using en-GB for nice English formatting)
+    // Date Header
     const now = new Date();
     const dateStr = new Intl.DateTimeFormat("en-GB", { weekday:"long", day:"numeric", month:"long" }).format(now);
     dateContainer.innerHTML = `
@@ -64,26 +64,53 @@ function renderMenu(menuItem) {
     let html = '<div class="menu-wrap">';
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        // Heuristic: Uppercase lines are usually Headers (e.g. "DAGENS RÄTT")
         const knownHeaders = [
             "DAGENS VEGETARISKA (SERVERAS ÄVEN PÅ GSK)",
             "DAGENS RÄTT (SERVERAS ÄVEN PÅ GSK)",
         ];
         
         const upperLine = line.toLocaleUpperCase('sv-SE');
-        
         const isHeader = (line === upperLine && line.length > 3) || knownHeaders.some(h => upperLine.includes(h));
         
         if (isHeader) {
             html += `<div class="menu-section">${escapeHtml(line)}</div>`;
         } else {
-            // Note: The dish names themselves will likely remain in Swedish 
-            // because they come directly from the Compass RSS feed.
             html += `<div class="menu-item"><div class="sv">${escapeHtml(line)}</div></div>`;
         }
     }
     html += '</div>';
     contentEl.innerHTML = html;
+}
+
+/* --- LOGIC: NEWS RENDERER (NEW) --- */
+function renderNews(newsItems) {
+    const newsList = document.getElementById('news-list');
+    
+    // Clear previous content
+    newsList.innerHTML = '';
+
+    if (!newsItems || newsItems.length === 0) {
+        newsList.innerHTML = '<p class="muted">No news updates at this time.</p>';
+        return;
+    }
+
+    // Create HTML for each news item
+    newsItems.forEach(item => {
+        const newsItem = document.createElement('div');
+        newsItem.className = 'news-item-card'; // You might need to add styling for this class in CSS
+        
+        // Inline styles for quick layout, move to CSS later if preferred
+        newsItem.style.marginBottom = '1.5rem';
+        newsItem.style.borderBottom = '1px solid #ccc';
+        newsItem.style.paddingBottom = '1rem';
+
+        newsItem.innerHTML = `
+            <h3 style="margin-bottom: 0.5rem; color: #003366;">${escapeHtml(item.Title)}</h3>
+            <small style="color: #666; display:block; margin-bottom: 0.5rem;">${escapeHtml(item.Created)}</small>
+            <p>${escapeHtml(item.Body)}</p>
+        `;
+        newsList.appendChild(newsItem);
+    });
 }
 
 /* --- LOGIC: SLIDESHOW --- */
@@ -100,10 +127,14 @@ async function showSlide(index) {
     const typeMap = { image: 'Info', news: 'News', menu: 'Menu' };
     statusPill.textContent = typeMap[type] || 'Showing';
 
-    // 4. Load Data
+    // 4. Load Data based on type
     if (type === 'menu') {
         const item = await loadMenuData(config.compassRssPath);
         renderMenu(item);
+    } 
+    else if (type === 'news') {
+        const items = await loadNewsData();
+        renderNews(items);
     }
 
     // 5. Timer & Progress Bar
@@ -126,7 +157,6 @@ async function showSlide(index) {
 /* --- UTILS --- */
 function updateClock() {
     const now = new Date();
-    // Use en-GB to keep 24h format (14:00) but English text (Thu, 4 Dec)
     clockEl.textContent = now.toLocaleString('en-GB', { 
         weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
     });
