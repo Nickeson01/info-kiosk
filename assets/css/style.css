@@ -80,7 +80,7 @@ p  { font-size:clamp(16px,1.6vw,22px); }
 /* The Title */
 .news-item-card h3 {
     font-family: sans-serif;   /* Or 'AlfaLaval-Bold' if defined in fonts.css */
-    font-size: 3rem;         /* Increase this number to make it bigger */
+    font-size: 1.8rem;         /* Increase this number to make it bigger */
     color: var(--darkBlue);            /* Alfa Laval Blue */
     margin-bottom: 0.5rem;
     font-weight: bold;
