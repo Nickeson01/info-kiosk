@@ -1,17 +1,1 @@
-[
-    {
-        "Title": "Coffee Price Drop",
-        "Created": "2025-12-05",
-        "Body": "Great news! Coffee in the kitchenette is now 5 SEK for students."
-    },
-    {
-        "Title": "CSN Reminder",
-        "Created": "2025-12-04",
-        "Body": "Don't forget to register for next semester's courses to ensure your payments."
-    },
-    {
-        "Title": "System Maintenance",
-        "Created": "2025-12-03",
-        "Body": "The student portal will be down for maintenance this Sunday night."
-    }
-]
+[{"Title":"Title","Created":"Created","Body":"Description"}]
