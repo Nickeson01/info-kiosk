@@ -69,3 +69,34 @@ p  { font-size:clamp(16px,1.6vw,22px); }
 
 .fs-btn { position:absolute; top:1vh; right:1vw; background:#182744; border:1px solid #28406e; color:#dbe7ff; padding:.5rem .8rem; border-radius:10px; cursor:pointer; font-size:14px; opacity:.6; }
 .fs-btn:hover { opacity:1; }
+
+/* --- News Card Styling --- */
+
+.news-item-card {
+    margin-bottom: 2rem;       /* Space between articles */
+    border-bottom: 1px solid #ddd; /* Light grey line separator */
+    padding-bottom: 1rem;
+}
+/* The Title */
+.news-item-card h3 {
+    font-family: sans-serif;   /* Or 'AlfaLaval-Bold' if defined in fonts.css */
+    font-size: 3rem;         /* Increase this number to make it bigger */
+    color: var(--darkBlue);            /* Alfa Laval Blue */
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+/* The Date */
+.news-item-card small {
+    display: block;            /* Forces date to its own line */
+    font-family: sans-serif;   /* Or 'AlfaLaval-Italic' */
+    font-size: 1rem;         /* Size of the date */
+    color: var(--heritageBlue);            
+    margin-bottom: 1rem;       /* Space between date and body text */
+    text-transform: uppercase; /* OPTIONAL: Makes date look like "2025-12-05" */
+}
+/* The Body Text */
+.news-item-card p {
+    font-size: 1.2rem;
+    line-height: 1.5;          /* Makes text easier to read */
+    color: var(--offWhite);
+}
