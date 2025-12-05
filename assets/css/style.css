@@ -80,8 +80,8 @@ p  { font-size:clamp(16px,1.6vw,22px); }
 /* The Title */
 .news-item-card h3 {
     font-family: sans-serif;   /* Or 'AlfaLaval-Bold' if defined in fonts.css */
-    font-size: 1.8rem;         /* Increase this number to make it bigger */
-    color: var(--darkBlue);            /* Alfa Laval Blue */
+    font-size: 1.7rem;         /* Increase this number to make it bigger */
+    color: var(--offWhite);            /* Alfa Laval Blue */
     margin-bottom: 0.5rem;
     font-weight: bold;
 }
@@ -96,7 +96,7 @@ p  { font-size:clamp(16px,1.6vw,22px); }
 }
 /* The Body Text */
 .news-item-card p {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     line-height: 1.5;          /* Makes text easier to read */
     color: var(--offWhite);
 }
